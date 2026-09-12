@@ -170,6 +170,7 @@ export async function registerRoutes(
 
   // Auth setup (handles /api/login, /api/register, /api/logout, /api/user)
   setupAuth(app);
+
   // Every /api/admin route must pass this server-side gate. Individual routes
   // may apply narrower checks, but a missing per-route check cannot grant access.
   app.use("/api/admin", adminLimiter, requireAdmin);

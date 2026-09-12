@@ -1,10 +1,10 @@
 ---
-name: Telegram production-only runtime
-description: Telegram polling and bot commands run only from the published production process, not the development preview.
+name: Telegram polling runtime
+description: Telegram polling can run in development, but only one process may poll a bot token.
 ---
 
-The Telegram bot intentionally stays disabled in the development workflow and starts from the published production process. Changes to commands, secrets, or bot menus are not visible to Telegram until the published app is restarted or republished.
+The Telegram bot runs from the normal Replit development server when its background jobs are enabled, and it can also run from the published server. Vercel serverless requests do not start polling.
 
-**Why:** Keeping polling production-only prevents development and production bots from competing for Telegram updates and avoids cross-environment database writes.
+**Why:** Telegram long polling allows only one active consumer per bot token; enabling development polling is useful for local testing but requires stopping other bot processes.
 
-**How to apply:** Validate code in the preview, then restart or republish the production app and confirm the production log reports Telegram long polling started.
+**How to apply:** Run one polling process at a time. Do not start the standalone bot worker while the regular development or published server is already polling with the same token.

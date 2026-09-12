@@ -9,4 +9,7 @@
 - [Vercel runtime configuration](vercel-runtime-configuration.md) — use the managed Node runtime and package engines; nodejs20.x is invalid as a function runtime identifier.
 - [Vercel TypeScript and ESM imports](vercel-typescript-path-mappings.md) — API functions need relative imports with explicit `.js` extensions for Vercel's native ESM runtime.
 - [Vercel health probe behavior](vercel-health-probe.md) — `/api/health` is a deployment-only routing probe; local Vite may serve the SPA there instead.
+- [Vercel nested API splat routing](vercel-nested-api-splat-routing.md) — plain Node functions need an explicit `/api/:path*` rewrite to `[...path]` or nested endpoints get platform 404s.
 - [Supabase migration verification](supabase-migration-verification.md) — verify recorded migrations and tables after an MCP output warning before retrying DDL.
+- [Auth route registration order](auth-route-registration-order.md) — register routes using Passport helpers after auth middleware is mounted.
+- [Supabase runtime connection](supabase-runtime-connection.md) — the Supabase MCP connection enables agent inspection, but Drizzle still needs a direct PostgreSQL URL to use Supabase at runtime.
