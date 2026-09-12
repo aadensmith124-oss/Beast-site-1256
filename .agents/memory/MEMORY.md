@@ -13,3 +13,4 @@
 - [Supabase migration verification](supabase-migration-verification.md) — verify recorded migrations and tables after an MCP output warning before retrying DDL.
 - [Auth route registration order](auth-route-registration-order.md) — register routes using Passport helpers after auth middleware is mounted.
 - [Supabase runtime connection](supabase-runtime-connection.md) — the Supabase MCP connection enables agent inspection, but Drizzle still needs a direct PostgreSQL URL to use Supabase at runtime.
+- [Replit PostgreSQL bindings](replit-postgres-bindings.md) — workflows may expose PG* variables without DATABASE_URL; node-postgres can connect through those managed bindings.

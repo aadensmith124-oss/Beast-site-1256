@@ -11,9 +11,9 @@ const databaseUrl =
   process.env.POSTGRES_PRISMA_URL;
 
 export function assertDatabaseConfigured() {
-  if (!databaseUrl) {
+  if (!databaseUrl && !process.env.PGHOST) {
     throw new Error(
-      "A PostgreSQL connection string is required. Set DATABASE_URL (or POSTGRES_URL_NON_POOLING/POSTGRES_URL in Vercel).",
+      "A PostgreSQL connection string or PGHOST binding is required. Set DATABASE_URL (or POSTGRES_URL_NON_POOLING/POSTGRES_URL in Vercel).",
     );
   }
 }
