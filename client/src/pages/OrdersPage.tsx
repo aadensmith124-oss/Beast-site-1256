@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import { useOrders } from "@/hooks/use-orders";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Loader2, RefreshCw } from "lucide-react";
-import { queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 type TabType = "all" | "cards" | "ach" | "logs";
 
@@ -64,9 +65,27 @@ function statusBadge(status: string) {
 export default function OrdersPage() {
   const { data: orders, isLoading, isError, refetch, isRefetching } = useOrders();
   const { user } = useAuth();
+  const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [tab, setTab] = useState<TabType>("all");
   const [search, setSearch] = useState("");
+  const createVouch = useMutation({
+    mutationFn: async (orderId: number) => {
+      const response = await apiRequest("POST", "/api/vouches/create-token", { orderId });
+      return response.json() as Promise<{ telegramUrl: string }>;
+    },
+    onSuccess: (result) => {
+      window.location.assign(result.telegramUrl);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Vouch unavailable",
+        description: error.message.replace(/^\d+:\s*/, ""),
+        variant: "destructive",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+    },
+  });
 
   const { data: transactions } = useQuery<any[]>({
     queryKey: ["/api/wallet/transactions"],
@@ -218,10 +237,19 @@ export default function OrdersPage() {
           {filteredOrders.map((order: any) => {
             const isCard = isCardOrder(order);
             const isFulfilled = order.status === "fulfilled" || order.status === "delivering" || order.status === "replaced";
+            const vouchStatus = order.vouchStatus as "pending" | "approved" | "rejected" | null;
             return (
-              <button
+              <div
                 key={order.id}
                 onClick={() => setLocation(`/order/${order.orderId}`)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setLocation(`/order/${order.orderId}`);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
                 className="w-full text-left border border-white/10 bg-[#0d0d0d] rounded-lg px-4 py-3 hover:bg-[#111]/5 hover:border-white/10 transition-all"
                 data-testid={`btn-order-${order.id}`}
               >
@@ -245,7 +273,36 @@ export default function OrdersPage() {
                     <p className="text-sm font-mono text-white">${(order.total / 100).toFixed(2)}</p>
                   </div>
                 </div>
-              </button>
+                {vouchStatus === "approved" ? (
+                  <p className="mt-3 pt-3 border-t border-white/10 text-[10px] text-green-400">
+                    ✅ Vouch Submitted — $0.50 Credit Awarded
+                  </p>
+                ) : vouchStatus === "pending" ? (
+                  <p className="mt-3 pt-3 border-t border-white/10 text-[10px] text-yellow-400">
+                    ⏳ Vouch Under Review
+                  </p>
+                ) : vouchStatus === "rejected" ? (
+                  <p className="mt-3 pt-3 border-t border-white/10 text-[10px] text-red-400">
+                    ❌ Vouch Rejected
+                  </p>
+                ) : isFulfilled ? (
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      const confirmed = window.confirm(
+                        "Submit a vouch for this order? Send an image showing your genuine experience through our Telegram bot. Approved genuine vouches receive $0.50 in site credit.",
+                      );
+                      if (confirmed) createVouch.mutate(order.id);
+                    }}
+                    disabled={createVouch.isPending}
+                    className="mt-3 w-full border border-red-500/30 bg-red-500/10 rounded px-3 py-2 text-[10px] font-bold text-red-300 hover:bg-red-500/20 transition-colors disabled:opacity-50"
+                    data-testid={`btn-submit-vouch-${order.id}`}
+                  >
+                    {createVouch.isPending ? "Generating secure link..." : "📸 Submit Vouch"}
+                  </button>
+                ) : null}
+              </div>
             );
           })}
         </div>

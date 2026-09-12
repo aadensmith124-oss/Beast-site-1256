@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
   Loader2, Copy, Check, Clock, CheckCircle2, XCircle, AlertTriangle,
-  RefreshCw, ExternalLink, Send
+  RefreshCw, ExternalLink, Send, Minus, Plus, ChevronDown
 } from "lucide-react";
 import { SiBitcoin, SiCashapp } from "react-icons/si";
 
@@ -38,6 +38,15 @@ const BONUS_TIERS = [
   { min: 2500, max: 4999, bonus: "+25%", example: "$2,500 → $3,125" },
   { min: 5000, max: null, bonus: "+30%", example: "$5,000 → $6,500" },
 ];
+
+const CRYPTO_COINS = ["Bitcoin", "Ethereum", "Litecoin", "Solana", "Tether"];
+const CRYPTO_NETWORKS: Record<string, string[]> = {
+  Bitcoin: ["Bitcoin"],
+  Ethereum: ["ERC20"],
+  Litecoin: ["Litecoin"],
+  Solana: ["Solana"],
+  Tether: ["ERC20", "TRC20", "BEP20"],
+};
 
 function methodColor(type: string) {
   if (type === "cashapp") return "#ff2d2d";
@@ -116,38 +125,38 @@ function ManualDepositPanel({ result, onReset }: { result: ManualResult; onReset
   const name = methodLabel(result.method);
 
   return (
-    <div className="rounded-2xl border overflow-hidden" style={{ borderColor: `${color}30`, background: `${color}06` }}>
-      <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: `${color}20` }}>
-        <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black text-white" style={{ background: color }}>
+    <div className="rounded-xl border overflow-hidden" style={{ borderColor: `${color}30`, background: `${color}06` }}>
+      <div className="px-3 py-2 border-b flex items-center gap-2" style={{ borderColor: `${color}20` }}>
+        <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white" style={{ background: color }}>
           {name.charAt(0)}
         </div>
-        <p className="text-sm font-bold" style={{ color }}>Send via {name}</p>
+        <p className="text-xs font-bold" style={{ color }}>Send via {name}</p>
       </div>
-      <div className="p-4 space-y-3">
-        <div className="rounded-xl bg-black/30 border border-white/5 px-4 py-3">
-          <p className="text-[9px] text-white/30 uppercase tracking-widest mb-1.5 font-mono">Send to</p>
+      <div className="p-3 space-y-2">
+        <div className="rounded-lg bg-black/30 border border-white/5 px-3 py-2">
+          <p className="text-[8px] text-white/30 uppercase tracking-widest mb-1 font-mono">Send to</p>
           <div className="flex items-center justify-between gap-2">
-            <p className="text-sm font-bold text-white font-mono truncate">{result.handle || `(no handle set)`}</p>
+            <p className="text-xs font-bold text-white font-mono truncate">{result.handle || `(no handle set)`}</p>
             {result.handle && <CopyBtn value={result.handle} />}
           </div>
         </div>
-        <div className="rounded-xl bg-black/30 border border-white/5 px-4 py-3">
-          <p className="text-[9px] text-white/30 uppercase tracking-widest mb-1.5 font-mono">Amount — send EXACTLY</p>
+        <div className="rounded-lg bg-black/30 border border-white/5 px-3 py-2">
+          <p className="text-[8px] text-white/30 uppercase tracking-widest mb-1 font-mono">Amount — send EXACTLY</p>
           <div className="flex items-center justify-between gap-2">
-            <p className="text-2xl font-black text-white font-mono">${(result.amount / 100).toFixed(2)}</p>
+            <p className="text-xl font-black text-white font-mono">${(result.amount / 100).toFixed(2)}</p>
             <CopyBtn value={(result.amount / 100).toFixed(2)} />
           </div>
-          <p className="text-[10px] text-yellow-400/60 font-mono mt-1.5">⚠ Wrong amount = not credited</p>
+          <p className="text-[9px] text-yellow-400/60 font-mono mt-1">⚠ Wrong amount = not credited</p>
         </div>
-        <div className="rounded-xl bg-black/30 border border-white/5 px-4 py-3">
-          <p className="text-[9px] text-white/30 uppercase tracking-widest mb-1.5 font-mono">Payment Note (required)</p>
+        <div className="rounded-lg bg-black/30 border border-white/5 px-3 py-2">
+          <p className="text-[8px] text-white/30 uppercase tracking-widest mb-1 font-mono">Payment Note (required)</p>
           <div className="flex items-center justify-between gap-2">
-            <p className="text-sm font-bold font-mono" style={{ color }}>{result.note}</p>
+            <p className="text-xs font-bold font-mono" style={{ color }}>{result.note}</p>
             <CopyBtn value={result.note} />
           </div>
         </div>
-        <p className="text-[10px] text-white/20 font-mono text-center">include the exact note · admin will confirm and credit balance</p>
-        <button onClick={onReset} className="w-full text-[11px] text-white/25 hover:text-white/50 transition-colors font-mono pt-1" data-testid="btn-new-deposit">
+        <p className="text-[9px] text-white/20 font-mono text-center">include the exact note · admin will confirm and credit balance</p>
+        <button onClick={onReset} className="w-full text-[10px] text-white/25 hover:text-white/50 transition-colors font-mono pt-1" data-testid="btn-new-deposit">
           ← create new deposit
         </button>
       </div>
@@ -162,8 +171,10 @@ export default function DepositPage() {
   const { toast } = useToast();
   const qc = useQueryClient();
 
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedOption, setSelectedOption] = useState<string | null>("crypto");
   const [amountInput, setAmountInput] = useState("");
+  const [cryptoCoin, setCryptoCoin] = useState("");
+  const [cryptoNetwork, setCryptoNetwork] = useState("");
   const [manualResult, setManualResult] = useState<ManualResult | null>(null);
 
   const { data: paymentMethods } = useQuery<Record<string, boolean>>({
@@ -193,7 +204,9 @@ export default function DepositPage() {
   const chimeEnabled = paymentMethods?.chime === true && manualMethods?.chime.enabled === true;
 
   const parsedAmount = parseFloat(amountInput) || 0;
-  const activeTier = BONUS_TIERS.find(t => parsedAmount >= t.min && (t.max === null || parsedAmount <= t.max));
+  const minimumDeposit = selectedOption === "crypto"
+    ? Math.max(1, minDeposits?.crypto ?? 0)
+    : Math.max(0.01, minDeposits?.[selectedOption as ManualMethod] ?? 0.01);
 
   const recentDeposits = deposits?.slice(0, 15) ?? [];
 
@@ -267,6 +280,11 @@ export default function DepositPage() {
 
   const isSelectedCrypto = selectedOption === "crypto";
 
+  function adjustAmount(delta: number) {
+    const next = Math.max(0, Math.round((parsedAmount + delta) * 100) / 100);
+    setAmountInput(next > 0 ? next.toFixed(2) : "");
+  }
+
   function handleContinue() {
     if (!selectedOption) return;
     if (isSelectedCrypto) cryptoMutation.mutate();
@@ -277,68 +295,133 @@ export default function DepositPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="flex-1 max-w-lg mx-auto w-full px-4 py-6 space-y-5">
+      <div className="flex-1 max-w-lg mx-auto w-full px-4 py-4 space-y-3">
 
-        {/* ── Hero ── */}
-        <div className="text-center pt-2 pb-2 space-y-1">
-          <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-wide uppercase">TurtleCC</h1>
-          <p className="text-sm text-white/50">Providing high quality cards since 2026.</p>
+        {/* ── Page heading ── */}
+        <div className="pt-1 pb-0.5 space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Deposit</h1>
+          <p className="text-sm text-white/50">Deposit funds to your account</p>
         </div>
 
         {manualResult ? (
-          <ManualDepositPanel result={manualResult} onReset={() => { setManualResult(null); setSelectedOption(null); setAmountInput(""); }} />
+          <ManualDepositPanel result={manualResult} onReset={() => { setManualResult(null); setSelectedOption("crypto"); setAmountInput(""); }} />
         ) : (
-          <>
-            {/* ── Amount ── */}
-            <div className="space-y-2">
-              <p className="text-sm font-bold text-white">Amount to charge</p>
-              <input
-                type="number"
-                step="0.01"
-                min="0.01"
-                placeholder="amount to charge in $"
-                value={amountInput}
-                onChange={e => setAmountInput(e.target.value)}
-                className="w-full h-11 bg-[#1a1a1a] border border-white/10 rounded px-3 text-sm text-white outline-none focus:border-primary/50 transition-colors placeholder:text-white/30"
-                data-testid="input-amount"
-              />
+          <div className="rounded-xl border border-white/10 bg-[#181818] p-3 sm:p-4 space-y-3">
+            {/* ── Payment method ── */}
+            <div className="grid grid-cols-2 gap-2">
+              {paymentOptions.map(opt => {
+                const isActive = selectedOption === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    onClick={() => {
+                      setSelectedOption(opt.id);
+                      if (opt.id !== "crypto") {
+                        setCryptoCoin("");
+                        setCryptoNetwork("");
+                      }
+                    }}
+                    className={`min-h-10 flex items-center justify-center gap-2 rounded-lg border px-2 text-xs sm:text-sm font-semibold transition-all ${
+                      isActive
+                        ? "border-white/80 bg-[#f1f1f1] text-black"
+                        : "border-white/15 bg-[#0d0d0d] text-white hover:border-white/35"
+                    }`}
+                    data-testid={`btn-payment-${opt.id}`}
+                  >
+                    {opt.id === "crypto" ? (
+                      <span className="text-lg leading-none" aria-hidden="true">🪙</span>
+                    ) : (
+                      <opt.Icon className="h-5 w-5 flex-shrink-0" style={{ color: opt.color }} />
+                    )}
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            {/* ── Payment processor ── */}
-            <div className="space-y-2">
-              <p className="text-sm font-bold text-white">Select payment processor</p>
-              <div className="space-y-2">
-                {paymentOptions.map(opt => {
-                  const isActive = selectedOption === opt.id;
-                  return (
-                    <button
-                      key={opt.id}
-                      onClick={() => setSelectedOption(opt.id)}
-                      className="w-full flex items-center justify-center gap-3 py-4 rounded border transition-all"
-                      style={{
-                        borderColor: isActive ? opt.color : "rgba(255,255,255,0.1)",
-                        background: isActive ? `${opt.color}12` : "#1a1a1a",
-                      }}
-                      data-testid={`btn-payment-${opt.id}`}
+            {isSelectedCrypto && (
+              <>
+                {/* ── Coin ── */}
+                <label className="block space-y-1">
+                  <span className="text-sm font-medium text-white">Coin</span>
+                  <span className="relative block">
+                    <select
+                      value={cryptoCoin}
+                      onChange={e => { setCryptoCoin(e.target.value); setCryptoNetwork(""); }}
+                      className="appearance-none w-full h-10 rounded-lg border border-white/15 bg-[#202020] px-3 pr-8 text-sm text-white outline-none focus:border-white/40 transition-colors"
+                      data-testid="select-crypto-coin"
                     >
-                      <opt.Icon className="h-6 w-6 flex-shrink-0" style={{ color: opt.color }} />
-                      <span className="text-sm font-medium text-white">{opt.label}</span>
-                    </button>
-                  );
-                })}
+                      <option value="">Select coin...</option>
+                      {CRYPTO_COINS.map(coin => <option key={coin} value={coin}>{coin}</option>)}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
+                  </span>
+                </label>
+
+                {/* ── Network ── */}
+                <label className="block space-y-1">
+                  <span className="text-sm font-medium text-white">Network</span>
+                  <span className="relative block">
+                    <select
+                      value={cryptoNetwork}
+                      onChange={e => setCryptoNetwork(e.target.value)}
+                      disabled={!cryptoCoin}
+                      className="appearance-none w-full h-10 rounded-lg border border-white/15 bg-[#202020] px-3 pr-8 text-sm text-white outline-none focus:border-white/40 transition-colors disabled:text-white/35 disabled:cursor-not-allowed"
+                      data-testid="select-crypto-network"
+                    >
+                      <option value="">Select network...</option>
+                      {(CRYPTO_NETWORKS[cryptoCoin] ?? []).map(network => <option key={network} value={network}>{network}</option>)}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
+                  </span>
+                </label>
+              </>
+            )}
+
+            {/* ── Amount ── */}
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-white">Amount (USD)</p>
+              <div className="grid grid-cols-[40px_minmax(0,1fr)_40px] gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => adjustAmount(-1)}
+                  className="h-10 rounded-lg border border-white/10 bg-[#202020] text-lg text-white/60 hover:text-white hover:border-white/30 transition-colors"
+                  aria-label="Decrease amount"
+                >
+                  <Minus className="h-4 w-4 mx-auto" />
+                </button>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  placeholder="15.00"
+                  value={amountInput}
+                  onChange={e => setAmountInput(e.target.value)}
+                  className="w-full h-10 rounded-lg border border-white/15 bg-[#202020] px-3 text-center text-sm text-white outline-none focus:border-white/40 transition-colors placeholder:text-white/45"
+                  data-testid="input-amount"
+                />
+                <button
+                  type="button"
+                  onClick={() => adjustAmount(1)}
+                  className="h-10 rounded-lg border border-white/10 bg-[#202020] text-lg text-white/70 hover:text-white hover:border-white/30 transition-colors"
+                  aria-label="Increase amount"
+                >
+                  <Plus className="h-4 w-4 mx-auto" />
+                </button>
               </div>
+              <p className="text-sm text-white/50">Minimum deposit: ${minimumDeposit.toFixed(2)}</p>
             </div>
 
-            {/* ── Charge button ── */}
+            {/* ── Create deposit ── */}
             <button
               onClick={handleContinue}
               disabled={!selectedOption || isPending || !amountInput || parsedAmount <= 0}
-              className="w-full py-3 rounded bg-primary hover:bg-primary/90 disabled:opacity-40 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-40 text-black font-semibold text-sm transition-colors flex items-center justify-center gap-2"
               data-testid="btn-continue-deposit"
             >
-              {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Processing...</> : "Charge"}
+              {isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Processing...</> : "Create Deposit"}
             </button>
-          </>
+          </div>
         )}
 
         {/* ── History ── */}

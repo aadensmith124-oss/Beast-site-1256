@@ -3,16 +3,29 @@ import { pool } from "./db.js";
 import { log } from "./logger.js";
 import { CLAIM_LIMIT_PER_WINDOW, getClaimAccess, remainingClaimSlots } from "./reward-claim-policy.js";
 import { MAX_LICENSE_FILE_BYTES, parseLicenseKeyFile } from "./license-key-file.js";
+import {
+  approveVouch,
+  bindVouchToken,
+  getActiveVouchToken,
+  getRecentVouches,
+  getVouchStats,
+  hashImageBuffer,
+  rejectVouch,
+  submitTelegramVouch,
+  ensureVouchSchema,
+  VouchError,
+} from "./vouches.js";
 
-const BOT_TOKEN    = process.env.TELEGRAM_BOT_TOKEN;
+const BOT_TOKEN    = process.env.TELEGRAM_BOT_TOKEN ?? process.env.BOT_TOKEN;
 const GROUP_ID     = process.env.Telegram_group_id;
 const GROUP_INVITE = "https://t.me/+3-lMkt-idutkOTIx";
 const TELEGRAM_ADMIN_IDS = new Set(
-  (process.env.TELEGRAM_ADMIN_IDS ?? "")
+  (process.env.TELEGRAM_ADMIN_IDS ?? process.env.ADMIN_USER_IDS ?? "")
     .split(",")
     .map(id => id.trim())
     .filter(Boolean),
 );
+const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID ?? process.env.ADMIN_CHAT_ID;
 const NAME_KEYWORD = "turtlecc.xyz";
 const BROADCAST_MAX_CHARS = 1_000;
 const BROADCAST_MAX_RECIPIENTS = 500;
@@ -25,6 +38,17 @@ function getMatch(ctx: Context): string {
   return (typeof ctx.match === "string" ? ctx.match : ctx.match?.[0] ?? "").trim();
 }
 
+function getStartParameter(ctx: Context): string {
+  const text = String((ctx.message as any)?.text ?? "");
+  const match = text.match(/^\/start(?:@\w+)?(?:\s+(.+))?$/);
+  return match?.[1]?.trim() ?? "";
+}
+
+function isVouchStart(ctx: Context): boolean {
+  const parameter = getStartParameter(ctx);
+  return Boolean(parameter && !parameter.startsWith("ref_"));
+}
+
 function hasKeyword(ctx: Context): boolean {
   const first = ctx.from?.first_name ?? "";
   const last  = ctx.from?.last_name  ?? "";
@@ -35,6 +59,142 @@ async function adminByChatId(chatId: string) {
   return TELEGRAM_ADMIN_IDS.has(chatId)
     ? { id: null, username: "Telegram admin" }
     : null;
+}
+
+async function downloadTelegramImage(bot: Bot, fileId: string) {
+  if (!BOT_TOKEN) throw new VouchError("BOT_NOT_CONFIGURED", "The Telegram bot is not configured.");
+  const file = await bot.api.getFile(fileId);
+  if (!file.file_path) throw new VouchError("INVALID_IMAGE", "Telegram did not provide an image file.");
+  const response = await fetch(`https://api.telegram.org/file/bot${BOT_TOKEN}/${file.file_path}`);
+  if (!response.ok) throw new VouchError("INVALID_IMAGE", "The image could not be downloaded from Telegram.");
+  const data = Buffer.from(await response.arrayBuffer());
+  return { data, imageHash: hashImageBuffer(data) };
+}
+
+function supportedDocument(document: any) {
+  const fileName = String(document?.file_name ?? "").toLowerCase();
+  const mimeType = String(document?.mime_type ?? "").toLowerCase();
+  const extensionAllowed = /\.(jpe?g|png|webp)$/.test(fileName);
+  const mimeAllowed = ["image/jpeg", "image/png", "image/webp"].includes(mimeType);
+  return extensionAllowed && mimeAllowed;
+}
+
+async function handleVouchImage(ctx: Context, bot: Bot, fileId: string, kind: "photo" | "document") {
+  const chatId = String(ctx.chat?.id ?? "");
+  const telegramUserId = String(ctx.from?.id ?? "");
+  if (!chatId || !telegramUserId) return;
+  if (!ADMIN_CHAT_ID) {
+    await ctx.reply("Vouch review is temporarily unavailable. Please try again later.");
+    return;
+  }
+  const active = await getActiveVouchToken(chatId, telegramUserId);
+  if (!active) {
+    await ctx.reply("This vouch link is invalid or expired. Return to your Orders page to generate a new one.");
+    return;
+  }
+
+  try {
+    const { imageHash } = await downloadTelegramImage(bot, fileId);
+    const vouch = await submitTelegramVouch({
+      telegramChatId: chatId,
+      telegramUserId,
+      telegramUsername: ctx.from?.username ?? null,
+      telegramFileId: fileId,
+      imageHash,
+    });
+    const caption =
+      `📸 VOUCH SUBMISSION\n\n` +
+      `Order: #${active.orderNumber}\n` +
+      `User reference: ${vouch.user_id}\n` +
+      `Reward: $0.50 site credit\n` +
+      `Submitted: ${new Date(vouch.created_at).toISOString()}\n` +
+      `Status: PENDING`;
+    const keyboard = new InlineKeyboard()
+      .text("✅ APPROVE", `vouch:approve:${vouch.id}`)
+      .text("❌ REJECT", `vouch:reject:${vouch.id}`);
+    const adminMessage = kind === "photo"
+      ? await bot.api.sendPhoto(ADMIN_CHAT_ID, fileId, { caption, reply_markup: keyboard })
+      : await bot.api.sendDocument(ADMIN_CHAT_ID, fileId, { caption, reply_markup: keyboard });
+    await pool.query(
+      `UPDATE vouches SET admin_chat_id = $1, admin_message_id = $2 WHERE id = $3`,
+      [ADMIN_CHAT_ID, adminMessage.message_id, vouch.id],
+    );
+    await ctx.reply(
+      `✅ Your image was submitted for review.\n\n` +
+      `Order: #${active.orderNumber}\n` +
+      `Approved genuine vouches receive $0.50 in site credit.\n` +
+      `Please do not submit fake, fabricated, exaggerated, or misleading feedback.`,
+    );
+  } catch (error) {
+    const message = error instanceof VouchError
+      ? error.message
+      : "The image could not be submitted right now. Please try again with a supported image.";
+    await ctx.reply(message);
+  }
+}
+
+async function handleVouchStart(ctx: Context) {
+  const parameter = getStartParameter(ctx);
+  try {
+    const bound = await bindVouchToken(
+      parameter,
+      String(ctx.chat?.id ?? ""),
+      String(ctx.from?.id ?? ""),
+      ctx.from?.username ?? null,
+    );
+    await ctx.reply(
+      `✅ Vouch link verified for order #${bound.orderNumber}.\n\n` +
+      `Send exactly one image showing your genuine experience: JPG, JPEG, PNG, or WEBP only.\n` +
+      `Text, videos, GIFs, documents, audio, stickers, and other media are not accepted.\n\n` +
+      `Approved genuine vouches receive $0.50 in site credit. Do not submit fake, fabricated, exaggerated, or misleading feedback.`,
+    );
+  } catch (error) {
+    await ctx.reply(
+      error instanceof VouchError
+        ? `${error.message}\n\nReturn to your Orders page to generate a new link.`
+        : "This vouch link is invalid or expired. Return to your Orders page to generate a new one.",
+    );
+  }
+}
+
+async function reviewVouchCallback(ctx: Context, action: "approve" | "reject", vouchId: number, bot: Bot) {
+  const admin = await adminByChatId(String(ctx.from?.id ?? ""));
+  if (!admin) {
+    await ctx.answerCallbackQuery({ text: "Not authorized", show_alert: true });
+    return;
+  }
+  await ctx.answerCallbackQuery();
+  const callbackChatId = ctx.chat?.id;
+  const callbackMessageId = ctx.callbackQuery?.message?.message_id;
+  try {
+    if (action === "approve") {
+      const result = await approveVouch(vouchId, String(ctx.from?.id));
+      await ctx.reply(`✅ Vouch #${vouchId} approved. $0.50 was added for order #${result.orderNumber}.`);
+      await bot.api.sendMessage(
+        result.chatId,
+        `✅ Your vouch for order #${result.orderNumber} was approved.\n$0.50 has been added to your site credit balance.`,
+      );
+      if (callbackChatId !== undefined && callbackMessageId !== undefined) {
+        await bot.api.editMessageCaption(String(callbackChatId), callbackMessageId, {
+          caption: `✅ VOUCH APPROVED\n\nOrder: #${result.orderNumber}\nReward: $0.50 site credit\nReviewed by admin ${String(ctx.from?.id)}\nStatus: APPROVED`,
+        });
+      }
+    } else {
+      const result = await rejectVouch(vouchId, String(ctx.from?.id));
+      await bot.api.sendMessage(
+        result.chatId,
+        `❌ Your vouch for order #${result.orderNumber} was not approved.\nNo credit was added.`,
+      );
+      if (callbackChatId !== undefined && callbackMessageId !== undefined) {
+        await bot.api.editMessageCaption(String(callbackChatId), callbackMessageId, {
+          caption: `❌ VOUCH REJECTED\n\nOrder: #${result.orderNumber}\nNo credit awarded\nReviewed by admin ${String(ctx.from?.id)}\nStatus: REJECTED`,
+        });
+      }
+    }
+  } catch (error) {
+    const message = error instanceof VouchError ? error.message : "Could not review this vouch.";
+    await ctx.reply(`⚠️ ${message}`);
+  }
 }
 
 async function registerTelegramMember(chatId: string, username: string | null) {
@@ -536,7 +696,7 @@ async function handleNameCheck(ctx: Context): Promise<void> {
 
 export function startTelegramBot() {
   if (!BOT_TOKEN) {
-    log("TELEGRAM_BOT_TOKEN not set — bot disabled", "telegram");
+    log("Telegram bot token not set — bot disabled", "telegram");
     return null;
   }
 
@@ -545,6 +705,9 @@ export function startTelegramBot() {
     { command: "start", description: "Open the drops menu" },
     { command: "claim", description: "Claim one queued drop per 24 hours" },
     { command: "status", description: "View access and claim status" },
+    { command: "vouches", description: "View your vouch submissions" },
+    { command: "stats", description: "View vouch reward totals" },
+    { command: "recent", description: "View recent vouches (admins)" },
     { command: "ref", description: "Get your referral link" },
     { command: "broadcast", description: "Send an admin announcement" },
     { command: "help", description: "Show bot help" },
@@ -554,15 +717,20 @@ export function startTelegramBot() {
   const schemaReady = ensureSchema().catch(err => {
     console.error("[telegram] schema migration failed:", err?.message)
   });
+  const vouchSchemaReady = ensureVouchSchema().catch(err => {
+    console.error("[telegram] vouch schema migration failed:", err?.message);
+  });
 
   bot.use(async (_ctx, next) => {
     await schemaReady;
+    await vouchSchemaReady;
     return next();
   });
 
   /* ── Group-membership gate ─────────────────────────────────────────────── */
   bot.use(async (ctx, next) => {
     if (!GROUP_ID) return next();
+    if (isVouchStart(ctx)) return next();
 
     const userId = ctx.from?.id;
     if (!userId) return next();
@@ -595,11 +763,15 @@ export function startTelegramBot() {
   /* ── /start ───────────────────────────────────────────────────────────── */
   bot.command("start", async (ctx: Context) => {
     const chatId = String(ctx.chat!.id);
+    const param = getMatch(ctx) || getStartParameter(ctx);
+    if (param && !param.startsWith("ref_")) {
+      await handleVouchStart(ctx);
+      return;
+    }
     const isNewTelegramMember = await registerTelegramMember(
       chatId,
       ctx.from?.username ?? null,
     );
-    const param = getMatch(ctx);
     if (isNewTelegramMember && param.startsWith("ref_")) {
       const referrerChatId = param.slice(4).trim();
       if (/^\d+$/.test(referrerChatId)) {
@@ -638,9 +810,78 @@ export function startTelegramBot() {
     await sendStatus(ctx);
   });
 
+  bot.callbackQuery(/^vouch:(approve|reject):(\d+)$/, async (ctx) => {
+    const match = ctx.match as RegExpMatchArray;
+    await reviewVouchCallback(ctx, match[1] as "approve" | "reject", Number(match[2]), bot);
+  });
+
+  bot.command("vouches", async (ctx: Context) => {
+    const chatId = String(ctx.chat?.id ?? "");
+    const rows = await pool.query(
+      `SELECT o.order_id AS order_number, v.status, v.reward_amount, v.created_at
+       FROM vouches v JOIN orders o ON o.id = v.order_id
+       WHERE v.telegram_chat_id = $1 ORDER BY v.created_at DESC LIMIT 10`,
+      [chatId],
+    );
+    if (rows.rows.length === 0) {
+      await ctx.reply("You have no vouch submissions yet.");
+      return;
+    }
+    await ctx.reply(
+      `📸 Your recent vouches\n\n${rows.rows.map((row) =>
+        `Order #${row.order_number} — ${String(row.status).toUpperCase()}${row.status === "approved" ? " (+$0.50)" : ""}`,
+      ).join("\n")}`,
+    );
+  });
+
+  bot.command("stats", async (ctx: Context) => {
+    const stats = await getVouchStats();
+    await ctx.reply(
+      `📊 Vouch totals\n\n` +
+      `Submissions: ${stats.totalSubmissions}\n` +
+      `Pending: ${stats.pending}\n` +
+      `Approved: ${stats.approved}\n` +
+      `Rejected: ${stats.rejected}\n` +
+      `Credit awarded: $${(stats.totalCredit / 100).toFixed(2)}`,
+    );
+  });
+
+  bot.command("recent", async (ctx: Context) => {
+    const admin = await adminByChatId(String(ctx.from?.id ?? ""));
+    if (!admin) {
+      await ctx.reply("❌ This command is restricted to authorized bot administrators.");
+      return;
+    }
+    const rows = await getRecentVouches(10);
+    await ctx.reply(
+      rows.length === 0
+        ? "No vouch submissions yet."
+        : `🕘 Recent vouches\n\n${rows.map((row) =>
+          `#${row.id} · order ${row.orderId} · ${row.status.toUpperCase()}`,
+        ).join("\n")}`,
+    );
+  });
+
   /* ── Admin drop file upload ─────────────────────────────────────────────── */
   bot.on("message:document", async (ctx) => {
+    const document = (ctx.message as any)?.document;
+    const active = await getActiveVouchToken(String(ctx.chat?.id ?? ""), String(ctx.from?.id ?? ""));
+    if (active && !supportedDocument(document)) {
+      await ctx.reply("Image only. Send a JPG, JPEG, PNG, or WEBP image directly.");
+      return;
+    }
+    if (active && supportedDocument(document)) {
+      await handleVouchImage(ctx, bot, document.file_id, "document");
+      return;
+    }
     await uploadLicenseFile(ctx, bot);
+  });
+
+  bot.on("message:photo", async (ctx) => {
+    const photos = (ctx.message as any)?.photo ?? [];
+    const largest = photos[photos.length - 1];
+    if (!largest?.file_id) return;
+    await handleVouchImage(ctx, bot, largest.file_id, "photo");
   });
 
   /* ── /broadcast MESSAGE (admin only) ───────────────────────────────────── */
@@ -666,6 +907,9 @@ export function startTelegramBot() {
       `*TurtleCC Drops Bot*\n\n` +
       `/claim — Get one queued drop per 24 hours\n` +
       `/status — View access and claim status\n` +
+      `/vouches — View your vouch submissions\n` +
+      `/stats — View vouch reward totals\n` +
+      `/recent — Admin-only recent vouches\n` +
       `/ref — Get a referral link for one extra drop\n` +
       `/broadcast message — Admin-only announcement to bot users\n` +
       `/help — Show this message\n\n` +
@@ -673,6 +917,13 @@ export function startTelegramBot() {
       `Admins: upload a .txt or .csv file directly to this bot. Each non-empty line becomes one queued drop.`,
       { ...MD, reply_markup: botKeyboard() }
     );
+  });
+
+  bot.on("message", async (ctx) => {
+    const active = await getActiveVouchToken(String(ctx.chat?.id ?? ""), String(ctx.from?.id ?? ""));
+    if (active) {
+      await ctx.reply("Image only. Send a JPG, JPEG, PNG, or WEBP image directly.");
+    }
   });
 
   bot.catch((err) => {

@@ -8,6 +8,7 @@ import { sql } from "drizzle-orm";
 import { pollPendingCryptoPayments } from "./crypto-poller.js";
 import { startTelegramBot } from "./telegram.js";
 import { log } from "./logger.js";
+import { ensureVouchSchema } from "./vouches.js";
 
 declare module "http" {
   interface IncomingMessage {
@@ -115,6 +116,7 @@ export async function initializeApp(
     )
   `);
   await pool.query(`CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire")`);
+  await ensureVouchSchema();
 
   await registerRoutes(httpServer, app);
 

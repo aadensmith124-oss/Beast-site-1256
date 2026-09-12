@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, real } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, real, uniqueIndex, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -128,8 +128,53 @@ export const transactions = pgTable("transactions", {
   type: text("type").notNull(), // deposit, purchase, refund, win, loss, daily_spin, manual_deposit
   description: text("description").notNull(),
   paymentMethod: text("payment_method"), // e.g., "Cash", "Card", "Crypto"
+  vouchId: integer("vouch_id"),
+  orderId: integer("order_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+// === TELEGRAM VOUCH REWARDS ===
+export const vouchTokens = pgTable("vouch_tokens", {
+  id: serial("id").primaryKey(),
+  tokenHash: text("token_hash").notNull().unique(),
+  orderId: integer("order_id").notNull().references(() => orders.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  telegramChatId: text("telegram_chat_id"),
+  telegramUserId: text("telegram_user_id"),
+  telegramUsername: text("telegram_username"),
+  expiresAt: timestamp("expires_at").notNull(),
+  usedAt: timestamp("used_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("vouch_tokens_order_idx").on(table.orderId),
+  index("vouch_tokens_chat_idx").on(table.telegramChatId),
+]);
+
+export const vouches = pgTable("vouches", {
+  id: serial("id").primaryKey(),
+  orderId: integer("order_id").notNull().references(() => orders.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  telegramChatId: text("telegram_chat_id").notNull(),
+  telegramUserId: text("telegram_user_id").notNull(),
+  telegramUsername: text("telegram_username"),
+  telegramFileId: text("telegram_file_id").notNull(),
+  imageHash: text("image_hash").notNull().unique(),
+  status: text("status", { enum: ["pending", "approved", "rejected"] }).default("pending").notNull(),
+  rewardAmount: integer("reward_amount").default(50).notNull(),
+  creditTransactionId: integer("credit_transaction_id").references(() => transactions.id),
+  adminChatId: text("admin_chat_id"),
+  adminMessageId: integer("admin_message_id"),
+  reviewedBy: text("reviewed_by"),
+  rejectionReason: text("rejection_reason"),
+  balanceBefore: integer("balance_before"),
+  balanceAfter: integer("balance_after"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  reviewedAt: timestamp("reviewed_at"),
+}, (table) => [
+  index("vouches_order_idx").on(table.orderId),
+  index("vouches_chat_idx").on(table.telegramChatId),
+  uniqueIndex("vouches_credit_transaction_idx").on(table.creditTransactionId),
+]);
 
 // === REDEEM CODES ===
 export const redeemCodes = pgTable("redeem_codes", {

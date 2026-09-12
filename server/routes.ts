@@ -12,6 +12,18 @@ import { cryptoPayments, orders, orderItems, verifications, variants, userIps, u
 import { db } from "./db.js";
 import { eq, and, ne, desc, sql } from "drizzle-orm";
 import { MAX_LICENSE_FILE_BYTES, parseLicenseKeyFile } from "./license-key-file.js";
+import {
+  approveVouch,
+  bindVouchToken,
+  createVouchToken,
+  getRecentVouches,
+  getTelegramBotUrl,
+  getVouchStats,
+  getVouchStatusesForOrders,
+  rejectVouch,
+  submitTelegramVouch,
+  VouchError,
+} from "./vouches.js";
 function isAdminOrWorker(req: any): boolean {
   const u = req.user as any;
   return req.isAuthenticated() && (u?.role === "admin" || u?.isWorker === true);
@@ -27,6 +39,27 @@ function requireAdmin(req: any, res: any, next: any) {
     });
   }
   next();
+}
+
+function requireInternalApi(req: any, res: any, next: any) {
+  const configuredKey = process.env.SITE_API_KEY ?? process.env.APP_ENCRYPTION_KEY;
+  const suppliedKey = String(req.get("x-site-api-key") ?? req.get("authorization")?.replace(/^Bearer\s+/i, "") ?? "");
+  if (!configuredKey || suppliedKey.length !== configuredKey.length ||
+      !timingSafeEqual(Buffer.from(suppliedKey), Buffer.from(configuredKey))) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  next();
+}
+
+function vouchErrorResponse(error: unknown, res: any) {
+  if (error instanceof VouchError) {
+    const status = error.code === "NOT_FOUND" ? 404
+      : ["INVALID_TOKEN", "INELIGIBLE", "ALREADY_SUBMITTED", "DUPLICATE_IMAGE", "ALREADY_REVIEWED", "ORDER_REWARDED", "ALREADY_REWARDED"].includes(error.code) ? 409
+      : 400;
+    return res.status(status).json({ message: error.message, code: error.code });
+  }
+  console.error("[vouch] request failed:", error instanceof Error ? error.message : error);
+  return res.status(500).json({ message: "Unable to process the vouch right now." });
 }
 
 // BIN lookup cache + throttle queue (binlist.net = ~10 req/min free tier)
@@ -75,6 +108,14 @@ const walletLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 10,
   message: { message: "Too many wallet requests. Slow down." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const vouchLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { message: "Too many vouch link requests. Try again later." },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -239,7 +280,17 @@ export async function registerRoutes(
   app.get(api.orders.list.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
     const orders = await storage.getOrders((req.user as any).id);
-    res.json(orders);
+    const statuses = await getVouchStatusesForOrders((req.user as any).id);
+    const latestByOrder = new Map<number, typeof statuses[number]>();
+    for (const status of statuses) {
+      if (!latestByOrder.has(status.orderId)) latestByOrder.set(status.orderId, status);
+    }
+    res.json(orders.map((order: any) => ({
+      ...order,
+      vouchStatus: latestByOrder.get(order.id)?.status ?? null,
+      vouchRewardAmount: latestByOrder.get(order.id)?.rewardAmount ?? null,
+      vouchReviewedAt: latestByOrder.get(order.id)?.reviewedAt ?? null,
+    })));
   });
 
   app.get(api.orders.get.path, async (req, res) => {
@@ -249,6 +300,93 @@ export async function registerRoutes(
       return res.status(404).json({ message: "Order not found" });
     }
     res.json(order);
+  });
+
+  // Telegram image vouches. Eligibility and reward values are always decided here.
+  app.post("/api/vouches/create-token", vouchLimiter, async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+    try {
+      const orderId = Number(req.body?.orderId);
+      if (!Number.isInteger(orderId) || orderId <= 0) return res.status(400).json({ message: "Invalid order." });
+      const created = await createVouchToken((req.user as any).id, orderId);
+      const botUrl = await getTelegramBotUrl();
+      res.json({
+        telegramUrl: `${botUrl}?start=${encodeURIComponent(created.token)}`,
+        expiresAt: created.expiresAt,
+        rewardAmount: 50,
+      });
+    } catch (error) {
+      return vouchErrorResponse(error, res);
+    }
+  });
+
+  app.get("/api/vouches/status", async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+    const statuses = await getVouchStatusesForOrders((req.user as any).id);
+    res.json(statuses);
+  });
+
+  // These endpoints are for a separately hosted bot or operational tooling.
+  // The in-process bot uses the same service functions directly.
+  app.post("/api/internal/vouches/validate-token", requireInternalApi, async (req, res) => {
+    try {
+      const result = await bindVouchToken(
+        String(req.body?.token ?? ""),
+        String(req.body?.telegramChatId ?? ""),
+        String(req.body?.telegramUserId ?? ""),
+        req.body?.telegramUsername ? String(req.body.telegramUsername) : null,
+      );
+      res.json({ valid: true, orderNumber: result.orderNumber, rewardAmount: result.rewardAmount, expiresAt: result.expiresAt });
+    } catch (error) {
+      return vouchErrorResponse(error, res);
+    }
+  });
+
+  app.post("/api/internal/vouches/submit", requireInternalApi, async (req, res) => {
+    try {
+      const imageHash = String(req.body?.imageHash ?? "");
+      if (!/^[a-f0-9]{64}$/.test(imageHash)) return res.status(400).json({ message: "Invalid image hash." });
+      const vouch = await submitTelegramVouch({
+        telegramChatId: String(req.body?.telegramChatId ?? ""),
+        telegramUserId: String(req.body?.telegramUserId ?? ""),
+        telegramUsername: req.body?.telegramUsername ? String(req.body.telegramUsername) : null,
+        telegramFileId: String(req.body?.telegramFileId ?? ""),
+        imageHash,
+      });
+      res.status(201).json({ id: vouch.id, status: vouch.status, orderId: vouch.order_id, rewardAmount: vouch.reward_amount });
+    } catch (error) {
+      return vouchErrorResponse(error, res);
+    }
+  });
+
+  app.post("/api/internal/vouches/:id/approve", requireInternalApi, async (req, res) => {
+    try {
+      const adminId = String(req.body?.adminId ?? "");
+      if (!adminId) return res.status(403).json({ message: "Admin identity is required." });
+      const result = await approveVouch(Number(req.params.id), adminId);
+      res.json({ id: result.vouch.id, status: result.vouch.status, rewardAmount: result.rewardAmount });
+    } catch (error) {
+      return vouchErrorResponse(error, res);
+    }
+  });
+
+  app.post("/api/internal/vouches/:id/reject", requireInternalApi, async (req, res) => {
+    try {
+      const adminId = String(req.body?.adminId ?? "");
+      if (!adminId) return res.status(403).json({ message: "Admin identity is required." });
+      const result = await rejectVouch(Number(req.params.id), adminId, req.body?.reason);
+      res.json({ id: result.vouch.id, status: result.vouch.status });
+    } catch (error) {
+      return vouchErrorResponse(error, res);
+    }
+  });
+
+  app.get("/api/internal/vouches/stats", requireInternalApi, async (_req, res) => {
+    res.json(await getVouchStats());
+  });
+
+  app.get("/api/internal/vouches/recent", requireInternalApi, async (req, res) => {
+    res.json(await getRecentVouches(Number(req.query.limit) || 10));
   });
 
   // Wallet & Redeem
