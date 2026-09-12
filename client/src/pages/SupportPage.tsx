@@ -113,7 +113,7 @@ function Footer() {
       <div className="flex items-center justify-center gap-5 text-xs font-semibold text-white/50 tracking-widest uppercase">
         <span>Reviews</span>
         <a
-          href="https://t.me/topcc_alias"
+          href="https://t.me/+3-lMkt-idutkOTIx"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center h-5 w-5 rounded-full bg-primary"
@@ -123,7 +123,7 @@ function Footer() {
         <span>TOS</span>
         <span>FAQs</span>
       </div>
-      <p className="text-xs text-white/25">© 2026 TopCc. All rights reserved</p>
+      <p className="text-xs text-white/25">© 2026 TurtleCC. All rights reserved</p>
     </div>
   );
 }
