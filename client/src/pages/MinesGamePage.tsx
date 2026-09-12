@@ -40,7 +40,7 @@ export default function MinesGamePage() {
                     "w-12 h-12 rounded-lg flex items-center justify-center font-black text-xs shadow-lg",
                     cell === 1 
                       ? "bg-destructive text-white shadow-destructive/20" 
-                      : "bg-green-500/10 text-green-500 border border-green-500/30"
+                      : "bg-red-500/10 text-red-500 border border-red-500/30"
                   )}
                 >
                   {cell === 1 ? <Bomb className="h-6 w-6" /> : "SAFE"}
@@ -54,7 +54,7 @@ export default function MinesGamePage() {
           </div>
 
           {result && (
-             <div className={`text-4xl font-black italic tracking-tighter uppercase ${result.won ? 'text-green-500' : 'text-destructive'}`}>
+             <div className={`text-4xl font-black italic tracking-tighter uppercase ${result.won ? 'text-red-500' : 'text-destructive'}`}>
               {result.won ? `CLEARED! +$${(result.payout/100).toFixed(2)}` : 'EXPLODED!'}
             </div>
           )}

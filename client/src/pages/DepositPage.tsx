@@ -40,10 +40,10 @@ const BONUS_TIERS = [
 ];
 
 function methodColor(type: string) {
-  if (type === "cashapp") return "#00D632";
+  if (type === "cashapp") return "#ff2d2d";
   if (type === "venmo") return "#3D95CE";
   if (type === "zelle") return "#9B59E8";
-  if (type === "chime") return "#7BC67E";
+  if (type === "chime") return "#ff2d2d";
   return "#F7931A";
 }
 function methodLabel(type: string) {
@@ -69,7 +69,7 @@ function CopyBtn({ value, className = "" }: { value: string; className?: string 
 
 function StatusBadge({ status }: { status: string }) {
   if (["completed","delivering","fulfilled"].includes(status))
-    return <span className="flex items-center gap-1 text-[10px] font-mono text-green-400"><CheckCircle2 className="h-3 w-3" />credited</span>;
+    return <span className="flex items-center gap-1 text-[10px] font-mono text-red-400"><CheckCircle2 className="h-3 w-3" />credited</span>;
   if (["failed","expired"].includes(status))
     return <span className="flex items-center gap-1 text-[10px] font-mono text-red-400/70"><XCircle className="h-3 w-3" />{status}</span>;
   if (status === "underpaid")
@@ -82,7 +82,7 @@ function DepositRow({ deposit }: { deposit: Deposit }) {
   const color = methodColor(deposit.type);
   return (
     <div className={`flex items-center justify-between px-3 py-2 rounded-xl border ${
-      isCredited ? "bg-green-950/10 border-green-900/15" :
+      isCredited ? "bg-red-950/10 border-red-900/15" :
       ["failed","expired"].includes(deposit.status) ? "bg-red-950/10 border-red-900/15" :
       "bg-white/[0.02] border-white/[0.05]"
     }`}>
@@ -259,10 +259,10 @@ export default function DepositPage() {
 
   const paymentOptions = [
     { id: "crypto", label: "Crypto", sub: "BTC · ETH · LTC · SOL · USDT", Icon: SiBitcoin, color: "#F7931A", fee: "0% fee" },
-    ...(cashappEnabled ? [{ id: "cashapp", label: "CashApp", sub: "instant", Icon: SiCashapp, color: "#00D632", fee: feeLabel(manualMethods?.cashapp?.fee) }] : []),
+    ...(cashappEnabled ? [{ id: "cashapp", label: "CashApp", sub: "instant", Icon: SiCashapp, color: "#ff2d2d", fee: feeLabel(manualMethods?.cashapp?.fee) }] : []),
     ...(venmoEnabled ? [{ id: "venmo", label: "Venmo", sub: "instant", Icon: (props: any) => <LetterIcon {...props} letter="V" />, color: "#3D95CE", fee: feeLabel(manualMethods?.venmo?.fee) }] : []),
     ...(zelleEnabled ? [{ id: "zelle", label: "Zelle", sub: "instant", Icon: (props: any) => <LetterIcon {...props} letter="Z" />, color: "#9B59E8", fee: feeLabel(manualMethods?.zelle?.fee) }] : []),
-    ...(chimeEnabled ? [{ id: "chime", label: "Chime", sub: "instant", Icon: (props: any) => <LetterIcon {...props} letter="C" />, color: "#7BC67E", fee: feeLabel(manualMethods?.chime?.fee) }] : []),
+    ...(chimeEnabled ? [{ id: "chime", label: "Chime", sub: "instant", Icon: (props: any) => <LetterIcon {...props} letter="C" />, color: "#ff2d2d", fee: feeLabel(manualMethods?.chime?.fee) }] : []),
   ];
 
   const isSelectedCrypto = selectedOption === "crypto";
@@ -281,7 +281,7 @@ export default function DepositPage() {
 
         {/* ── Hero ── */}
         <div className="text-center pt-2 pb-2 space-y-1">
-          <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-wide uppercase">GorillaCC</h1>
+          <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-wide uppercase">TurtleCC</h1>
           <p className="text-sm text-white/50">Providing high quality cards since 2026.</p>
         </div>
 
@@ -361,14 +361,14 @@ export default function DepositPage() {
       <div className="border-t border-white/8 py-6 px-4 text-center space-y-2">
         <div className="flex items-center justify-center gap-5 text-xs font-semibold text-white/50 tracking-widest uppercase">
           <span>Reviews</span>
-          <a href="https://t.me/+4mXj61Q-goYwNWU9" target="_blank" rel="noopener noreferrer"
+          <a href="https://t.me/+3-lMkt-idutkOTIx" target="_blank" rel="noopener noreferrer"
             className="flex items-center justify-center h-5 w-5 rounded-full bg-primary">
             <Send className="h-2.5 w-2.5 text-white fill-white" />
           </a>
           <span>TOS</span>
           <span>FAQs</span>
         </div>
-        <p className="text-xs text-white/25">© 2026 GorillaCC. All rights reserved</p>
+        <p className="text-xs text-white/25">© 2026 TurtleCC. All rights reserved</p>
       </div>
     </div>
   );

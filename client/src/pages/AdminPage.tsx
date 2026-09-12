@@ -210,7 +210,7 @@ function DashboardSection() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <StatCard title="Total Users" value={stats?.totalUsers || 0} icon={Users} />
         <StatCard title="Total Orders" value={stats?.totalOrders || 0} icon={ShoppingBag} />
-        <StatCard title="Total Sales" value={`$${((stats?.totalSales || 0) / 100).toFixed(2)}`} icon={DollarSign} color="green" />
+        <StatCard title="Total Sales" value={`$${((stats?.totalSales || 0) / 100).toFixed(2)}`} icon={DollarSign} color="red" />
         <StatCard title="Pending Orders" value={stats?.pendingOrders || 0} icon={Receipt} color="orange" />
         <StatCard title="Stock Worth" value={`$${((stats?.stockWorth || 0) / 100).toFixed(2)}`} icon={Package} color="gold" />
       </div>
@@ -459,7 +459,7 @@ function DepositsSection() {
   });
 
   const statusBadge = (status: string, type: string) => {
-    if (status === "fulfilled" || status === "delivering") return <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/15 text-green-400 font-mono">credited</span>;
+    if (status === "fulfilled" || status === "delivering") return <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 font-mono">credited</span>;
     if (status === "pending") return <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-mono">{type === "cashapp" ? "awaiting admin" : "pending"}</span>;
     if (status === "waiting_payment") return <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 font-mono">unpaid</span>;
     return <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#111]/5 text-white/45 font-mono">{status}</span>;
@@ -497,7 +497,7 @@ function DepositsSection() {
                 <TableRow key={d.id} className="border-white/10 hover:bg-[#111]/[0.02]">
                   <TableCell className="text-xs font-mono text-white/60">{d.username}</TableCell>
                   <TableCell className="text-xs">
-                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${d.type === "crypto" ? "bg-blue-500/15 text-blue-400" : "bg-green-500/15 text-green-400"}`}>
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${d.type === "crypto" ? "bg-blue-500/15 text-blue-400" : "bg-red-500/15 text-red-400"}`}>
                       {d.type}
                     </span>
                   </TableCell>
@@ -516,7 +516,7 @@ function DepositsSection() {
 }
 
 function StatCard({ title, value, icon: Icon, color }: any) {
-  const colorClass = color === "green" ? "text-green-500" : color === "orange" ? "text-orange-500" : "text-primary";
+  const colorClass = color === "red" ? "text-red-500" : color === "orange" ? "text-orange-500" : "text-primary";
   return (
     <Card className="bg-[#111] border-white/10">
       <CardContent className="p-4 flex items-center justify-between">
@@ -846,7 +846,7 @@ function ProductsSection() {
                           <div className="flex items-center gap-2 min-w-0">
                             <span className="text-sm font-medium truncate">{v.name}</span>
                             <span className="text-xs text-muted-foreground">${(v.price / 100).toFixed(2)}</span>
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${v.stockCount > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${v.stockCount > 0 ? "bg-red-500/20 text-red-400" : "bg-red-500/20 text-red-400"}`}>
                               {v.stockCount || 0} in stock
                             </span>
                           </div>
@@ -1172,7 +1172,7 @@ function statusLabel(s: string) {
 function statusBadgeClass(s: string) {
   if (s === "pending") return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
   if (s === "waiting_payment") return "bg-red-500/20 text-red-400 border-red-500/30";
-  if (s === "delivering" || s === "fulfilled") return "bg-green-500/20 text-green-400 border-green-500/30";
+  if (s === "delivering" || s === "fulfilled") return "bg-red-500/20 text-red-400 border-red-500/30";
   if (s === "refunded") return "bg-orange-500/20 text-orange-400 border-orange-500/30";
   if (s === "replaced") return "bg-blue-500/20 text-blue-400 border-blue-500/30";
   return "bg-[#111]/5 text-white/60";
@@ -1277,7 +1277,7 @@ function OrdersSection() {
             <div><p className="text-[10px] text-white/45 mb-0.5">Customer</p><p className="text-xs text-white font-bold">{current.user?.username || current.userId} · @{current.user?.telegramUsername || "—"}</p></div>
             <div><p className="text-[10px] text-white/45 mb-0.5">Payment</p><p className="text-xs text-white/70">{current.paymentMethod || "—"}</p></div>
             {current.paymentNote && (
-              <div><p className="text-[10px] text-white/45 mb-0.5">Payment Note</p><p className="text-xs font-mono text-[#00D632]">{current.paymentNote}</p></div>
+              <div><p className="text-[10px] text-white/45 mb-0.5">Payment Note</p><p className="text-xs font-mono text-[#ff2d2d]">{current.paymentNote}</p></div>
             )}
             <div><p className="text-[10px] text-white/45 mb-0.5">Amount</p><p className="text-xs text-white/70">${(current.total / 100).toFixed(2)}</p></div>
             <div><p className="text-[10px] text-white/45 mb-0.5">Status</p><p className={`text-xs font-bold ${statusTextColor(current.status)}`}>{statusLabel(current.status)}</p></div>
@@ -1288,7 +1288,7 @@ function OrdersSection() {
               <button
                 onClick={() => { cashappFulfillMutation.mutate(current.id); }}
                 disabled={cashappFulfillMutation.isPending}
-                className="flex-1 h-11 rounded-xl bg-[#00D632]/20 border border-[#00D632]/40 text-[#00D632] text-sm font-black hover:bg-[#00D632]/30 transition-colors disabled:opacity-50"
+                className="flex-1 h-11 rounded-xl bg-[#ff2d2d]/20 border border-[#ff2d2d]/40 text-[#ff2d2d] text-sm font-black hover:bg-[#ff2d2d]/30 transition-colors disabled:opacity-50"
                 data-testid={`button-cashapp-paid-detail-${current.id}`}
               >
                 {cashappFulfillMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : "✓ Paid — Deliver Stock"}
@@ -1440,7 +1440,7 @@ function OrdersSection() {
 function statusTextColor(s: string) {
   if (s === "pending") return "text-yellow-400";
   if (s === "waiting_payment") return "text-red-400";
-  if (s === "delivering" || s === "fulfilled") return "text-green-400";
+  if (s === "delivering" || s === "fulfilled") return "text-red-400";
   if (s === "refunded") return "text-orange-400";
   if (s === "replaced") return "text-blue-400";
   return "text-white/45";
@@ -1549,9 +1549,9 @@ function TestModeSection({ onGoToOrders }: { onGoToOrders: () => void }) {
       </Card>
 
       {lastOrder && (
-        <Card className="bg-green-500/5 border-green-500/20">
+        <Card className="bg-red-500/5 border-red-500/20">
           <CardContent className="p-4 space-y-3">
-            <p className="text-sm font-bold text-green-400">✓ Test order created!</p>
+            <p className="text-sm font-bold text-red-400">✓ Test order created!</p>
             <div className="text-xs text-muted-foreground space-y-1">
               <p>Order ID: <span className="font-mono text-white">{lastOrder.orderId}</span></p>
               <p>Status: <Badge className="bg-blue-500/20 text-blue-400 text-[10px]">delivering</Badge></p>
@@ -1782,7 +1782,7 @@ function UsersSection() {
               <button
                 onClick={() => unbanMutation.mutate(selectedUser.id)}
                 disabled={unbanMutation.isPending}
-                className="h-7 px-3 bg-green-700/80 hover:bg-green-700 text-white text-xs font-bold rounded transition-colors disabled:opacity-40"
+                className="h-7 px-3 bg-red-700/80 hover:bg-red-700 text-white text-xs font-bold rounded transition-colors disabled:opacity-40"
                 data-testid={`btn-unban-${selectedUser.id}`}
               >
                 Unban
@@ -1985,7 +1985,7 @@ function CodesSection() {
                   <div className="bg-[#111]/5 border border-white/10 rounded-lg p-3 space-y-1 max-h-48 overflow-y-auto">
                     {generated.map((c) => (
                       <div key={c} className="flex items-center justify-between group">
-                        <span className="text-xs font-mono text-green-400">{c}</span>
+                        <span className="text-xs font-mono text-red-400">{c}</span>
                         <button
                           onClick={() => { navigator.clipboard.writeText(c); toast({ title: "Copied" }); }}
                           className="text-[10px] text-white/40 hover:text-white opacity-0 group-hover:opacity-100 transition-all"
@@ -2014,8 +2014,8 @@ function CodesSection() {
                       <div>
                         <p className="text-sm font-bold text-white font-mono">{c.code}</p>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <span className="text-xs font-bold text-green-400">${(c.amount / 100).toFixed(2)}</span>
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.isUsed ? "bg-[#0d0d0d] text-white/40" : "bg-green-500/20 text-green-400"}`}>
+                          <span className="text-xs font-bold text-red-400">${(c.amount / 100).toFixed(2)}</span>
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${c.isUsed ? "bg-[#0d0d0d] text-white/40" : "bg-red-500/20 text-red-400"}`}>
                             {c.isUsed ? "Used" : "Available"}
                           </span>
                         </div>
@@ -2323,10 +2323,10 @@ function IntegrationsSection() {
 
   const METHODS = [
     { id: "wallet", label: "Wallet / Balance", icon: <Wallet className="h-4 w-4 text-white" />, bg: "bg-primary" },
-    { id: "cashapp", label: "CashApp", icon: <SiCashapp className="h-4 w-4 text-white" />, bg: "bg-[#00D632]" },
+    { id: "cashapp", label: "CashApp", icon: <SiCashapp className="h-4 w-4 text-white" />, bg: "bg-[#ff2d2d]" },
     { id: "venmo", label: "Venmo", icon: <span className="text-white font-black text-sm">V</span>, bg: "bg-[#3D95CE]" },
     { id: "zelle", label: "Zelle", icon: <span className="text-white font-black text-sm">Z</span>, bg: "bg-[#6D1ED4]" },
-    { id: "chime", label: "Chime", icon: <span className="text-white font-black text-sm">C</span>, bg: "bg-[#7BC67E]" },
+    { id: "chime", label: "Chime", icon: <span className="text-white font-black text-sm">C</span>, bg: "bg-[#ff2d2d]" },
     { id: "crypto", label: "Crypto", icon: <SiBitcoin className="h-4 w-4 text-white" />, bg: "bg-primary" },
     { id: "stars", label: "Telegram Stars", icon: <Star className="h-4 w-4 text-white fill-white" />, bg: "bg-blue-500" },
   ];
@@ -2384,10 +2384,10 @@ function IntegrationsSection() {
             description="Customers send CashApp to this tag with a generated note."
             settingKey="cashapp-tag"
             placeholder="$YourCashTag"
-            color="#00D632"
+            color="#ff2d2d"
           />
-          <MinDepositCard method="cashapp" label="CashApp" color="#00D632" />
-          <FeeSettingCard method="cashapp" label="CashApp" color="#00D632" />
+          <MinDepositCard method="cashapp" label="CashApp" color="#ff2d2d" />
+          <FeeSettingCard method="cashapp" label="CashApp" color="#ff2d2d" />
         </div>
       </div>
 
@@ -2417,10 +2417,10 @@ function IntegrationsSection() {
             description="Phone number or email customers send Chime payments to."
             settingKey="chime-handle"
             placeholder="+1 (555) 000-0000"
-            color="#7BC67E"
+            color="#ff2d2d"
           />
-          <MinDepositCard method="chime" label="Chime" color="#7BC67E" />
-          <FeeSettingCard method="chime" label="Chime" color="#7BC67E" />
+          <MinDepositCard method="chime" label="Chime" color="#ff2d2d" />
+          <FeeSettingCard method="chime" label="Chime" color="#ff2d2d" />
         </div>
       </div>
 
@@ -2444,7 +2444,7 @@ function IntegrationsSection() {
               </div>
               <div className="shrink-0 mt-0.5">
                 {integrationStatus?.TELEGRAM_BOT_TOKEN ? (
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30">✓ Set</Badge>
+                  <Badge className="bg-red-500/20 text-red-400 border-red-500/30">✓ Set</Badge>
                 ) : (
                   <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">⚠ Not set</Badge>
                 )}
@@ -2530,9 +2530,9 @@ function FeatureTogglesCard() {
 
 function methodMeta(method: string) {
   if (method === "Venmo") return { color: "#3D95CE", label: "Venmo", icon: "V" };
-  if (method === "Chime") return { color: "#7BC67E", label: "Chime", icon: "C" };
+  if (method === "Chime") return { color: "#ff2d2d", label: "Chime", icon: "C" };
   if (method === "Zelle") return { color: "#9B59E8", label: "Zelle", icon: "Z" };
-  return { color: "#00D632", label: "CashApp", icon: "$" };
+  return { color: "#ff2d2d", label: "CashApp", icon: "$" };
 }
 
 function CashAppSection() {
@@ -2705,9 +2705,9 @@ function CashAppSection() {
       <div className="flex gap-1.5 flex-wrap">
         {[
           { key: "all", label: "All", count: pendingOrders.length, color: "text-white/70" },
-          { key: "CashApp", label: "CashApp", count: cashappCount, color: "text-[#00D632]" },
+          { key: "CashApp", label: "CashApp", count: cashappCount, color: "text-[#ff2d2d]" },
           { key: "Venmo", label: "Venmo", count: venmoCount, color: "text-[#3D95CE]" },
-          { key: "Chime", label: "Chime", count: chimeCount, color: "text-[#7BC67E]" },
+          { key: "Chime", label: "Chime", count: chimeCount, color: "text-[#ff2d2d]" },
           { key: "Zelle", label: "Zelle", count: zelleCount, color: "text-[#9B59E8]" },
         ].map(({ key, label, count, color }) => (
           <button
@@ -3091,7 +3091,7 @@ function AdminCardsSection() {
               <p className="text-[10px] text-primary/60 font-mono">BIN: {previewBin}</p>
             )}
             {previewZip && (
-              <p className="text-[10px] text-green-400/60 font-mono">ZIP: {previewZip}</p>
+              <p className="text-[10px] text-red-400/60 font-mono">ZIP: {previewZip}</p>
             )}
           </div>
         </div>
@@ -3404,7 +3404,7 @@ function SmtpSection() {
 
           <div className="space-y-1">
             <label className="text-[10px] text-white/45 uppercase tracking-widest">
-              App Password {smtpData?.has_password && <span className="text-green-400 normal-case">(saved)</span>}
+              App Password {smtpData?.has_password && <span className="text-red-400 normal-case">(saved)</span>}
             </label>
             <Input
               value={password}
@@ -3477,7 +3477,7 @@ function SellersSection() {
   const pendingCount = (sellers || []).filter((s: any) => s.status === "pending").length;
 
   function statusBadge(status: string) {
-    if (status === "approved") return <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/15 text-green-400 font-mono">approved</span>;
+    if (status === "approved") return <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 font-mono">approved</span>;
     if (status === "pending") return <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 font-mono">pending</span>;
     if (status === "rejected") return <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 font-mono">rejected</span>;
     return <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#0d0d0d] text-white/45 font-mono">{status}</span>;
@@ -3584,7 +3584,7 @@ function SellersSection() {
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      className="flex-1 h-8 text-xs bg-green-600 hover:bg-green-700 text-white"
+                      className="flex-1 h-8 text-xs bg-red-600 hover:bg-red-700 text-white"
                       onClick={() => approveMutation.mutate(selected.id)}
                       disabled={approveMutation.isPending}
                       data-testid="btn-seller-approve"
@@ -3657,7 +3657,7 @@ function SupportSection() {
 
   const statusCls = (s: string) => {
     if (s === "open")     return "bg-yellow-500/15 text-yellow-400 border-yellow-500/20";
-    if (s === "refunded") return "bg-green-500/15  text-green-400  border-green-500/20";
+    if (s === "refunded") return "bg-red-500/15  text-red-400  border-red-500/20";
     if (s === "replaced") return "bg-blue-500/15   text-blue-400   border-blue-500/20";
     return "bg-white/8 text-white/40 border-white/10";
   };
@@ -3731,7 +3731,7 @@ function SupportSection() {
                           disabled={actionMutation.isPending}
                           className={`text-xs h-8 ${
                             action === "refund"
-                              ? "bg-green-700 hover:bg-green-600 text-white"
+                              ? "bg-red-700 hover:bg-red-600 text-white"
                               : action === "replace"
                               ? "bg-blue-700 hover:bg-blue-600 text-white"
                               : "bg-white/10 hover:bg-white/15 text-white/70"

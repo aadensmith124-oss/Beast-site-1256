@@ -17,7 +17,7 @@ function statusLabel(s: string) {
 }
 
 function statusColor(s: string) {
-  if (s === "fulfilled" || s === "delivering") return "text-green-400";
+  if (s === "fulfilled" || s === "delivering") return "text-red-400";
   if (s === "replaced") return "text-blue-400";
   if (s === "waiting_payment") return "text-orange-400";
   if (s === "refunded") return "text-orange-400";

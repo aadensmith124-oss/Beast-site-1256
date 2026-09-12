@@ -90,8 +90,8 @@ export function CryptoPaymentModal({ open, onOpenChange, total, purpose = "depos
           ) : checkoutUrl ? (
             <>
               <div className="text-center space-y-3">
-                <div className="h-16 w-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto">
-                  <ExternalLink className="h-8 w-8 text-green-500" />
+                <div className="h-16 w-16 rounded-full bg-red-500/20 flex items-center justify-center mx-auto">
+                  <ExternalLink className="h-8 w-8 text-red-500" />
                 </div>
                 <p className="font-medium text-foreground">Payment Window Opened</p>
                 <p className="text-sm text-muted-foreground">

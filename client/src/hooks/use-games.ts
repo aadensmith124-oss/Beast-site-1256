@@ -23,7 +23,7 @@ export function useGames() {
     onSuccess: (data) => {
       queryClient.setQueryData([api.auth.me.path], (old: any) => ({ ...old, balance: data.newBalance }));
       if (data.won) {
-        toast({ title: "You Won!", description: `Payout: $${(data.payout / 100).toFixed(2)}`, className: "bg-green-600 text-white" });
+        toast({ title: "You Won!", description: `Payout: $${(data.payout / 100).toFixed(2)}`, className: "bg-red-600 text-white" });
       }
     },
     onError: (err) => toast({ title: "Error", description: err.message, variant: "destructive" }),
@@ -45,7 +45,7 @@ export function useGames() {
     onSuccess: (data) => {
       queryClient.setQueryData([api.auth.me.path], (old: any) => ({ ...old, balance: data.newBalance }));
       if (data.won) {
-         toast({ title: "Mines Cleared!", description: `Payout: $${(data.payout / 100).toFixed(2)}`, className: "bg-green-600 text-white" });
+         toast({ title: "Mines Cleared!", description: `Payout: $${(data.payout / 100).toFixed(2)}`, className: "bg-red-600 text-white" });
       } else {
          toast({ title: "Boom!", description: "You hit a mine.", variant: "destructive" });
       }

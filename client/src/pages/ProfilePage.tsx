@@ -358,16 +358,16 @@ function OrdersTab() {
                       <td className="p-4 truncate max-w-[200px]">
                         {titleParts.join(' + ')}
                       </td>
-                      <td className="p-4 text-green-500">${(order.total / 100).toFixed(2)}</td>
+                      <td className="p-4 text-red-500">${(order.total / 100).toFixed(2)}</td>
                       <td className="p-4">
                         <span className={`flex items-center gap-2 ${
-                          (order.status as string) === 'fulfilled' || (order.status as string) === 'paid' || (order.status as string) === 'delivering' || (order.status as string) === 'replaced' ? 'text-green-500' 
+                          (order.status as string) === 'fulfilled' || (order.status as string) === 'paid' || (order.status as string) === 'delivering' || (order.status as string) === 'replaced' ? 'text-red-500'
                           : (order.status as string) === 'unpaid' || (order.status as string) === 'waiting_payment' ? 'text-red-500'
                           : (order.status as string) === 'refunded' ? 'text-orange-400'
                           : 'text-primary'
                         }`}>
                           <span className={`w-2 h-2 rounded-full ${
-                            (order.status as string) === 'fulfilled' || (order.status as string) === 'paid' || (order.status as string) === 'delivering' || (order.status as string) === 'replaced' ? 'bg-green-500'
+                            (order.status as string) === 'fulfilled' || (order.status as string) === 'paid' || (order.status as string) === 'delivering' || (order.status as string) === 'replaced' ? 'bg-red-500'
                             : (order.status as string) === 'unpaid' || (order.status as string) === 'waiting_payment' ? 'bg-red-500'
                             : (order.status as string) === 'refunded' ? 'bg-orange-400'
                             : 'bg-primary'
@@ -504,7 +504,7 @@ function OrderDetailsSheet({ order, open, onOpenChange }: { order: any; open: bo
               <div className="space-y-1">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase">Status</p>
                 <p className={`text-xs font-bold ${
-                  order.status === 'fulfilled' || order.status === 'paid' || order.status === 'delivering' || order.status === 'replaced' ? 'text-green-500'
+                  order.status === 'fulfilled' || order.status === 'paid' || order.status === 'delivering' || order.status === 'replaced' ? 'text-red-500'
                   : order.status === 'unpaid' || order.status === 'waiting_payment' ? 'text-red-500'
                   : order.status === 'refunded' ? 'text-orange-400'
                   : 'text-primary'
@@ -608,14 +608,14 @@ function BalanceTab({ user }: { user: any }) {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground font-medium">Current Balance</span>
-            <span className="text-green-500 font-bold text-xl">${(user.balance / 100).toFixed(2)}</span>
+            <span className="text-red-500 font-bold text-xl">${(user.balance / 100).toFixed(2)}</span>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-green-900/20 border-green-500/20">
+      <Card className="bg-red-900/20 border-red-500/20">
         <CardContent className="p-4">
-          <p className="text-sm text-green-300">
+          <p className="text-sm text-red-300">
             Balance decays at 0.7% per hour of your current balance to keep purchasing fair for everyone.
           </p>
         </CardContent>
@@ -666,7 +666,7 @@ function BalanceTab({ user }: { user: any }) {
             />
           </div>
           <Button 
-            className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-bold"
+            className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-bold"
             onClick={handleRedeem}
             disabled={loading || !giftCardCode.trim()}
             data-testid="button-redeem-gift-card"

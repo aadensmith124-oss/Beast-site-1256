@@ -20,7 +20,7 @@ function statusLabel(s: string) {
   return map[s] || s;
 }
 function statusClass(s: string) {
-  if (["fulfilled","delivering","replaced"].includes(s)) return "bg-green-500/20 text-green-400 border-green-500/30";
+  if (["fulfilled","delivering","replaced"].includes(s)) return "bg-red-500/20 text-red-400 border-red-500/30";
   if (s === "pending") return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
   if (s === "refunded") return "bg-blue-500/20 text-blue-400 border-blue-500/30";
   if (s === "waiting_payment") return "bg-red-500/20 text-red-400 border-red-500/30";
@@ -332,7 +332,7 @@ function CardsTab() {
             return (
               <div key={card.id} className="bg-[#111] border border-white/10 rounded-xl px-4 py-3 flex items-center justify-between" data-testid={`row-card-${card.id}`}>
                 <div className="space-y-0.5 min-w-0 flex-1">
-                  <p className="text-xs font-mono font-bold text-primary">🔥 GorillaCC | {card.hrPercent ?? 80}% HR 🔥</p>
+                  <p className="text-xs font-mono font-bold text-primary">🔥 TurtleCC | {card.hrPercent ?? 80}% HR 🔥</p>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono bg-[#111]/5 border border-white/10 px-1.5 py-0.5 rounded text-white/45">{cBin}</span>
                     {card.binData?.bank && <span className="text-[10px] text-white/40 font-mono">{card.binData.bank}</span>}

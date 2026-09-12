@@ -53,7 +53,7 @@ export default function DiceGamePage() {
           </div>
 
           {result && (
-            <div className={`text-4xl font-black italic tracking-tighter uppercase ${result.won ? 'text-green-500' : 'text-red-500'}`}>
+            <div className={`text-4xl font-black italic tracking-tighter uppercase ${result.won ? 'text-red-500' : 'text-red-500'}`}>
               {result.won ? `YOU WON $${(result.payout/100).toFixed(2)}!` : 'YOU LOST'}
             </div>
           )}

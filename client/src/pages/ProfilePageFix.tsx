@@ -104,16 +104,16 @@ export default function ProfilePage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="w-full justify-start border-b border-white/10 bg-transparent p-0 h-auto rounded-none gap-5">
-          <TabsTrigger value="dashboard" className="rounded-none border-b-2 border-transparent data-[state=active]:border-green-700 data-[state=active]:bg-transparent px-0 py-2.5 text-xs font-semibold text-white/45 data-[state=active]:text-green-800">
+          <TabsTrigger value="dashboard" className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-700 data-[state=active]:bg-transparent px-0 py-2.5 text-xs font-semibold text-white/45 data-[state=active]:text-red-400">
             Dashboard
           </TabsTrigger>
-          <TabsTrigger value="orders" className="rounded-none border-b-2 border-transparent data-[state=active]:border-green-700 data-[state=active]:bg-transparent px-0 py-2.5 text-xs font-semibold text-white/45 data-[state=active]:text-green-800">
+          <TabsTrigger value="orders" className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-700 data-[state=active]:bg-transparent px-0 py-2.5 text-xs font-semibold text-white/45 data-[state=active]:text-red-400">
             Orders
           </TabsTrigger>
-          <TabsTrigger value="settings" className="rounded-none border-b-2 border-transparent data-[state=active]:border-green-700 data-[state=active]:bg-transparent px-0 py-2.5 text-xs font-semibold text-white/45 data-[state=active]:text-green-800">
+          <TabsTrigger value="settings" className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-700 data-[state=active]:bg-transparent px-0 py-2.5 text-xs font-semibold text-white/45 data-[state=active]:text-red-400">
             Settings
           </TabsTrigger>
-          <TabsTrigger value="balance" className="rounded-none border-b-2 border-transparent data-[state=active]:border-green-700 data-[state=active]:bg-transparent px-0 py-2.5 text-xs font-semibold text-white/45 data-[state=active]:text-green-800">
+          <TabsTrigger value="balance" className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-700 data-[state=active]:bg-transparent px-0 py-2.5 text-xs font-semibold text-white/45 data-[state=active]:text-red-400">
             Balance
           </TabsTrigger>
         </TabsList>
@@ -246,7 +246,7 @@ function OrdersTab({ orders, onNavigate }: { orders: any[]; onNavigate: (path: s
                         className="flex items-center gap-1 text-[10px] text-white/30 hover:text-white/60 transition-colors"
                       >
                         {copied[`${order.id}-${variantId}`]
-                          ? <><Check className="h-3 w-3 text-green-400" /> <span className="text-green-400">Copied</span></>
+                          ? <><Check className="h-3 w-3 text-red-400" /> <span className="text-red-400">Copied</span></>
                           : <><Copy className="h-3 w-3" /> Copy</>
                         }
                       </button>
@@ -345,7 +345,7 @@ function statusLabel(s: string) {
 function statusColor(s: string) {
   if (s === "pending") return "text-blue-400";
   if (s === "waiting_payment") return "text-yellow-400";
-  if (s === "fulfilled" || s === "delivering") return "text-green-400";
+  if (s === "fulfilled" || s === "delivering") return "text-red-400";
   if (s === "refunded") return "text-orange-400";
   if (s === "replaced") return "text-blue-400";
   return "text-white/45";

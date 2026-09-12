@@ -5,25 +5,25 @@
 @tailwind utilities;
 
 :root {
-  --background: 120 10% 4%;
+  --background: 0 0% 4%;
   --foreground: 0 0% 95%;
-  --card: 120 8% 8%;
+  --card: 0 0% 8%;
   --card-foreground: 0 0% 95%;
-  --popover: 120 8% 8%;
+  --popover: 0 0% 8%;
   --popover-foreground: 0 0% 95%;
-  --primary: 82 65% 48%;
-  --primary-foreground: 100 20% 5%;
-  --secondary: 120 8% 12%;
+  --primary: 0 100% 59%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 12%;
   --secondary-foreground: 0 0% 80%;
-  --muted: 120 8% 12%;
-  --muted-foreground: 100 8% 52%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 52%;
   --accent: 42 85% 55%;
   --accent-foreground: 35 40% 8%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 98%;
-  --border: 100 10% 16%;
-  --input: 120 8% 9%;
-  --ring: 82 65% 48%;
+  --border: 0 0% 16%;
+  --input: 0 0% 9%;
+  --ring: 0 100% 59%;
   --radius: 0.625rem;
   --font-display: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
@@ -36,7 +36,7 @@
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
     background-image:
-      radial-gradient(circle at 85% -10%, hsl(82 65% 48% / 0.1), transparent 32rem),
+      radial-gradient(circle at 85% -10%, hsl(0 100% 59% / 0.1), transparent 32rem),
       radial-gradient(circle at -10% 40%, hsl(42 85% 55% / 0.06), transparent 28rem);
   }
   h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); }
@@ -59,5 +59,5 @@
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
 .glass { @apply bg-white/[0.04] backdrop-blur-xl border border-primary/[0.12] shadow-md; }
-.pro-card { @apply bg-[#111711] border border-white/10 rounded-2xl shadow-sm; }
-.item-row { @apply border border-white/10 bg-[#111711] rounded-xl p-3 hover:bg-primary/[0.06] transition-colors; }
+.pro-card { @apply bg-[#111111] border border-white/10 rounded-2xl shadow-sm; }
+.item-row { @apply border border-white/10 bg-[#111111] rounded-xl p-3 hover:bg-primary/[0.06] transition-colors; }

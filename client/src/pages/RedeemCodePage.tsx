@@ -46,7 +46,7 @@ export default function RedeemCodePage() {
             <Gift className="h-6 w-6 text-primary" />
           </div>
           <h1 className="text-2xl font-black uppercase tracking-wide text-white">Redeem Code</h1>
-          <p className="mt-2 text-sm text-white/45">Add balance to your GorillaCC account.</p>
+          <p className="mt-2 text-sm text-white/45">Add balance to your TurtleCC account.</p>
         </div>
 
         <div className="mb-4 flex items-center justify-between rounded-lg border border-white/10 bg-[#111] px-4 py-3">
@@ -86,12 +86,12 @@ export default function RedeemCodePage() {
           )}
 
           {result && (
-            <div className="mt-4 rounded border border-green-500/25 bg-green-500/10 px-3 py-3" role="status">
-              <div className="flex items-center gap-2 text-sm font-semibold text-green-300">
+            <div className="mt-4 rounded border border-red-500/25 bg-red-500/10 px-3 py-3" role="status">
+              <div className="flex items-center gap-2 text-sm font-semibold text-red-300">
                 <CheckCircle2 className="h-4 w-4" />
                 Code redeemed successfully
               </div>
-              <p className="mt-1 text-xs text-green-200/70">
+              <p className="mt-1 text-xs text-red-200/70">
                 ${(result.amountAdded / 100).toFixed(2)} was added to your balance.
               </p>
             </div>
@@ -111,7 +111,7 @@ export default function RedeemCodePage() {
         <div className="mt-4 flex gap-3 rounded-lg border border-white/8 bg-white/[0.02] px-4 py-3">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
           <p className="text-xs leading-relaxed text-white/45">
-            Balance codes are issued by GorillaCC admins. Once redeemed, the value is added directly to your account and the code cannot be used again.
+            Balance codes are issued by TurtleCC admins. Once redeemed, the value is added directly to your account and the code cannot be used again.
           </p>
         </div>
       </div>

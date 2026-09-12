@@ -123,7 +123,7 @@ function DiceGame() {
         </div>
 
         {result && (
-          <div className={`text-2xl font-bold ${result.won ? 'text-green-500' : 'text-red-500'}`}>
+          <div className={`text-2xl font-bold ${result.won ? 'text-red-500' : 'text-red-500'}`}>
             {result.won ? `YOU WON $${(result.payout/100).toFixed(2)}!` : 'YOU LOST'}
           </div>
         )}
@@ -181,7 +181,7 @@ function MinesGame() {
                   "w-12 h-12 rounded-md flex items-center justify-center font-bold text-lg shadow-sm",
                   cell === 1 
                     ? "bg-destructive text-white" 
-                    : "bg-green-500/20 text-green-500 border border-green-500/50"
+                    : "bg-red-500/20 text-red-500 border border-red-500/50"
                 )}
               >
                 {cell === 1 ? <Bomb className="h-6 w-6" /> : "SAFE"}
@@ -195,7 +195,7 @@ function MinesGame() {
         </div>
 
         {result && (
-           <div className={`text-2xl font-bold ${result.won ? 'text-green-500' : 'text-destructive'}`}>
+           <div className={`text-2xl font-bold ${result.won ? 'text-red-500' : 'text-destructive'}`}>
             {result.won ? `CLEARED! +$${(result.payout/100).toFixed(2)}` : 'EXPLODED!'}
           </div>
         )}

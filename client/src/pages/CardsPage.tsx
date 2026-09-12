@@ -113,7 +113,7 @@ function IncineratorProtocol() {
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#d64a58]">Inventory protocol</span>
               <span className="h-1 w-1 rounded-full bg-[#d64a58] shadow-[0_0_8px_#d64a58]" />
-              <span className="text-[9px] font-medium uppercase tracking-[0.18em] text-white/35">GorillaCC</span>
+              <span className="text-[9px] font-medium uppercase tracking-[0.18em] text-white/35">TurtleCC</span>
             </div>
             <h2 className="mt-1 text-xl font-black uppercase leading-none tracking-[0.12em] text-[#e2bd6b] sm:text-2xl">
               Gorilla Incinerator
@@ -285,7 +285,7 @@ export default function CardsPage() {
 
       {/* ── Hero ── */}
       <div className="text-center pt-8 pb-4 space-y-1">
-        <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-wide uppercase">GorillaCC</h1>
+        <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-wide uppercase">TurtleCC</h1>
         <p className="text-sm text-white/50">Providing high quality cards since 2026.</p>
       </div>
 
@@ -462,7 +462,7 @@ export default function CardsPage() {
                     type="checkbox"
                     checked={filteredCards.length > 0 && cartCardIds.size === filteredCards.length}
                     onChange={toggleAll}
-                    className="w-3.5 h-3.5 rounded border-white/15 cursor-pointer accent-green-500"
+                    className="w-3.5 h-3.5 rounded border-white/15 cursor-pointer accent-red-500"
                     data-testid="checkbox-all"
                   />
                 </th>
@@ -530,7 +530,7 @@ function CardTableRow({ card, inCart, onToggleCart }: { card: any; inCart: boole
           type="checkbox"
           checked={inCart}
           onChange={() => onToggleCart(card)}
-          className="w-3.5 h-3.5 rounded border-white/15 cursor-pointer accent-green-500"
+          className="w-3.5 h-3.5 rounded border-white/15 cursor-pointer accent-red-500"
           data-testid={`checkbox-card-${card.id}`}
         />
       </td>

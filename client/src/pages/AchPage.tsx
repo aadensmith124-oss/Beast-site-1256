@@ -32,7 +32,7 @@ function AchRow({ ach, inCart, onToggleCart }: { ach: any; inCart: boolean; onTo
   });
 
   return (
-    <div className={`border rounded mb-2 overflow-hidden transition-colors ${inCart ? "border-green-600/40 bg-[#111]" : "border-white/10 bg-[#111]"}`}>
+    <div className={`border rounded mb-2 overflow-hidden transition-colors ${inCart ? "border-red-600/40 bg-[#111]" : "border-white/10 bg-[#111]"}`}>
       <div className="px-4 py-3 space-y-1.5">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-0.5 min-w-0">
@@ -51,7 +51,7 @@ function AchRow({ ach, inCart, onToggleCart }: { ach: any; inCart: boolean; onTo
             onClick={() => onToggleCart(ach)}
             className={`flex items-center gap-1.5 border rounded text-xs font-bold py-1.5 px-3 transition-all ${
               inCart
-                ? "border-green-600/60 text-green-400 bg-green-900/20"
+                ? "border-red-600/60 text-red-400 bg-red-900/20"
                 : "border-white/10 text-white/50 hover:border-white/15 hover:text-white"
             }`}
             data-testid={`btn-cart-ach-${ach.id}`}
@@ -62,7 +62,7 @@ function AchRow({ ach, inCart, onToggleCart }: { ach: any; inCart: boolean; onTo
           <button
             onClick={() => purchaseMutation.mutate()}
             disabled={purchaseMutation.isPending}
-            className="flex-1 border border-green-600/60 text-green-400 rounded text-xs font-bold py-1.5 transition-all hover:bg-green-900/20 disabled:opacity-50 flex items-center justify-center gap-1.5"
+            className="flex-1 border border-red-600/60 text-red-400 rounded text-xs font-bold py-1.5 transition-all hover:bg-red-900/20 disabled:opacity-50 flex items-center justify-center gap-1.5"
             data-testid={`btn-buy-ach-${ach.id}`}
           >
             {purchaseMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : `Buy $${(ach.price / 100).toFixed(2)}`}
@@ -143,9 +143,9 @@ export default function AchPage() {
     <div className="max-w-2xl mx-auto px-3 py-4 space-y-2">
       {/* Cart checkout bar */}
       {cartIds.size > 0 && (
-        <div className="border border-green-600/30 bg-green-950/20 rounded px-3 py-2 flex items-center justify-between">
-          <span className="text-xs text-green-400">{cartIds.size} selected · ${(cartTotal / 100).toFixed(2)}</span>
-          <button onClick={purchaseCart} className="text-[11px] text-green-400 font-bold hover:text-green-300">checkout →</button>
+        <div className="border border-red-600/30 bg-red-950/20 rounded px-3 py-2 flex items-center justify-between">
+          <span className="text-xs text-red-400">{cartIds.size} selected · ${(cartTotal / 100).toFixed(2)}</span>
+          <button onClick={purchaseCart} className="text-[11px] text-red-400 font-bold hover:text-red-300">checkout →</button>
         </div>
       )}
 

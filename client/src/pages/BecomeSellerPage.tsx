@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 const PERKS = [
-  { icon: Store, label: "Own Storefront", desc: "List your products on GorillaCC" },
+  { icon: Store, label: "Own Storefront", desc: "List your products on TurtleCC" },
   { icon: Zap, label: "Instant Delivery", desc: "Stock-based auto-delivery" },
   { icon: ShieldCheck, label: "Verified Badge", desc: "Trusted seller status" },
 ];
@@ -81,7 +81,7 @@ export default function BecomeSellerPage() {
 
         {/* ── Hero ── */}
         <div className="text-center pt-2 pb-2 space-y-1">
-          <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-wide uppercase">GorillaCC</h1>
+          <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-wide uppercase">TurtleCC</h1>
           <p className="text-sm text-white/50">Providing high quality cards since 2026.</p>
         </div>
 
@@ -91,7 +91,7 @@ export default function BecomeSellerPage() {
             <BadgeCheck className="h-5 w-5 text-primary" />
             <h1 className="text-xl font-bold text-white">Become a Seller</h1>
           </div>
-          <p className="text-xs text-white/45">Apply to sell your products on GorillaCC and reach our customer base</p>
+          <p className="text-xs text-white/45">Apply to sell your products on TurtleCC and reach our customer base</p>
         </div>
 
         {/* Perks — only show when not approved */}
@@ -110,10 +110,10 @@ export default function BecomeSellerPage() {
         {/* === APPROVED === */}
         {application?.status === "approved" && (
           <div className="space-y-4">
-            <div className="flex items-center gap-4 bg-green-500/8 border border-green-500/25 rounded-2xl px-5 py-5">
-              <CheckCircle2 className="h-8 w-8 text-green-400 shrink-0" />
+            <div className="flex items-center gap-4 bg-red-500/8 border border-red-500/25 rounded-2xl px-5 py-5">
+              <CheckCircle2 className="h-8 w-8 text-red-400 shrink-0" />
               <div>
-                <p className="text-base font-black text-green-400">You're an Approved Seller!</p>
+                <p className="text-base font-black text-red-400">You're an Approved Seller!</p>
                 <p className="text-xs text-white/45 mt-0.5">Your application has been approved. Use your seller code below.</p>
               </div>
             </div>
@@ -130,7 +130,7 @@ export default function BecomeSellerPage() {
                     className="h-8 w-8 flex items-center justify-center rounded-lg bg-[#0d0d0d] border border-white/10 hover:bg-[#111]/5 transition-colors"
                     data-testid="btn-copy-seller-code"
                   >
-                    {copied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5 text-white/45" />}
+                    {copied ? <Check className="h-3.5 w-3.5 text-red-400" /> : <Copy className="h-3.5 w-3.5 text-white/45" />}
                   </button>
                 </div>
               </div>
@@ -186,7 +186,7 @@ function ApplyForm({ note, setNote, onSubmit, isPending, label }: {
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-xs text-white/45 block mb-1.5">Why do you want to sell on GorillaCC? <span className="text-white/40">(optional)</span></label>
+        <label className="text-xs text-white/45 block mb-1.5">Why do you want to sell on TurtleCC? <span className="text-white/40">(optional)</span></label>
         <Textarea
           placeholder="Tell us a bit about what you plan to sell and your experience..."
           value={note}

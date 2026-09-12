@@ -68,7 +68,7 @@ export default function CheckerPage() {
 
         {/* ── Hero ── */}
         <div className="text-center pt-2 pb-2 space-y-1">
-          <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-wide uppercase">GorillaCC</h1>
+          <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-wide uppercase">TurtleCC</h1>
           <p className="text-sm text-white/50">Providing high quality cards since 2026.</p>
         </div>
 
@@ -155,9 +155,9 @@ export default function CheckerPage() {
           <div className="space-y-4">
             {/* Summary bar */}
             <div className="flex gap-3">
-              <div className="flex-1 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3 text-center">
-                <p className="text-2xl font-black text-green-400">{approved.length}</p>
-                <p className="text-[10px] text-green-400/70 font-semibold uppercase tracking-wide mt-0.5">Approved</p>
+              <div className="flex-1 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-center">
+                <p className="text-2xl font-black text-red-400">{approved.length}</p>
+                <p className="text-[10px] text-red-400/70 font-semibold uppercase tracking-wide mt-0.5">Approved</p>
               </div>
               <div className="flex-1 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-center">
                 <p className="text-2xl font-black text-red-400">{declined.length}</p>
@@ -168,14 +168,14 @@ export default function CheckerPage() {
             {/* Approved cards */}
             {approved.length > 0 && (
               <div className="space-y-1.5">
-                <p className="text-[10px] font-bold text-green-400/80 uppercase tracking-widest">✓ Approved</p>
+                <p className="text-[10px] font-bold text-red-400/80 uppercase tracking-widest">✓ Approved</p>
                 {approved.map((r, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-3 bg-green-500/5 border border-green-500/20 rounded-xl px-4 py-3"
+                    className="flex items-center gap-3 bg-red-500/5 border border-red-500/20 rounded-xl px-4 py-3"
                     data-testid={`result-approved-${i}`}
                   >
-                    <CheckCircle className="h-4 w-4 text-green-400 shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-red-400 shrink-0" />
                     <p className="text-xs font-mono text-white/70 break-all">
                       {r.number} | {r.date} | {r.cvv}
                     </p>

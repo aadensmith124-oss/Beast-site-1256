@@ -52,7 +52,7 @@ export function SecurityCheck({ onVerified }: SecurityCheckProps) {
     >
       <div className="max-w-lg">
         <p className="text-white/60 text-sm font-mono mb-8 tracking-wide">
-           GorillaCC
+           TurtleCC
         </p>
 
         <h1 className="text-white text-3xl md:text-4xl font-extrabold mb-4 leading-tight">
@@ -79,7 +79,7 @@ export function SecurityCheck({ onVerified }: SecurityCheckProps) {
                   className="w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all duration-150 group-hover:border-white/60"
                   style={{ borderColor: "#333", background: "#0c0c0c" }}
                 >
-                  <div className="w-2.5 h-2.5 rounded-sm opacity-0 group-hover:opacity-30 transition-opacity" style={{ background: "#9acb3f" }} />
+                  <div className="w-2.5 h-2.5 rounded-sm opacity-0 group-hover:opacity-30 transition-opacity" style={{ background: "#ff2d2d" }} />
                 </div>
                 <span className="text-white/80 text-sm font-medium">I am human</span>
               </button>
@@ -88,10 +88,10 @@ export function SecurityCheck({ onVerified }: SecurityCheckProps) {
                 {done ? (
                   <div
                     className="w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0"
-                    style={{ borderColor: "#9acb3f", background: "#9acb3f22" }}
+                    style={{ borderColor: "#ff2d2d", background: "#ff2d2d22" }}
                   >
                     <svg className="w-3.5 h-3.5" viewBox="0 0 12 12" fill="none">
-                      <path d="M2 6l3 3 5-5" stroke="#9acb3f" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M2 6l3 3 5-5" stroke="#ff2d2d" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 ) : (
@@ -111,7 +111,7 @@ export function SecurityCheck({ onVerified }: SecurityCheckProps) {
                             left: `${x}%`,
                             top: `${y}%`,
                             transform: "translate(-50%, -50%)",
-                            background: "#9acb3f",
+                            background: "#ff2d2d",
                             opacity: isActive ? 1 : 0.2,
                           }}
                         />
@@ -139,7 +139,7 @@ export function SecurityCheck({ onVerified }: SecurityCheckProps) {
             className="h-full rounded-full transition-all duration-300"
             style={{
               width: `${progress}%`,
-              background: "#9acb3f",
+              background: "#ff2d2d",
             }}
           />
         </div>
@@ -147,7 +147,7 @@ export function SecurityCheck({ onVerified }: SecurityCheckProps) {
 
       <div className="absolute bottom-6 left-0 right-0 text-center">
         <p className="text-white/20 text-[11px]">
-          Ray ID: {rayId.current} · Protected by GorillaCC Security
+          Ray ID: {rayId.current} · Protected by TurtleCC Security
         </p>
       </div>
     </div>

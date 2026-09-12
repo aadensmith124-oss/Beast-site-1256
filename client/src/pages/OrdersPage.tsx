@@ -46,8 +46,8 @@ function isLogOrder(order: any): boolean {
 
 function statusBadge(status: string) {
   const map: Record<string, { label: string; cls: string }> = {
-    fulfilled: { label: "FULFILLED", cls: "bg-green-900/40 text-green-400" },
-    delivering: { label: "FULFILLED", cls: "bg-green-900/40 text-green-400" },
+    fulfilled: { label: "FULFILLED", cls: "bg-red-900/40 text-red-400" },
+    delivering: { label: "FULFILLED", cls: "bg-red-900/40 text-red-400" },
     pending: { label: "PENDING", cls: "bg-yellow-900/40 text-yellow-400" },
     waiting_payment: { label: "UNPAID", cls: "bg-orange-900/40 text-orange-400" },
     refunded: { label: "REFUNDED", cls: "bg-red-900/40 text-red-400" },
@@ -154,7 +154,7 @@ export default function OrdersPage() {
             <RefreshCw className={`h-3 w-3 ${isRefetching ? "animate-spin" : ""}`} />
             Refresh
           </button>
-          <a href="https://t.me/+4mXj61Q-goYwNWU9" target="_blank" rel="noopener noreferrer">
+          <a href="https://t.me/+3-lMkt-idutkOTIx" target="_blank" rel="noopener noreferrer">
             <button className="flex items-center gap-1.5 border border-white/10 bg-[#111] rounded px-3 py-1.5 text-xs text-white/45 hover:text-white/70 transition-all" data-testid="btn-support">
               Support
             </button>
@@ -191,7 +191,7 @@ export default function OrdersPage() {
             </button>
             {t.href && (
               <Link href={t.href}>
-                <span className="text-[9px] pb-2 -mb-px text-green-600 hover:text-green-700 cursor-pointer font-mono underline underline-offset-2 transition-colors" data-testid={`link-shop-${t.key}`}>
+                <span className="text-[9px] pb-2 -mb-px text-red-400 hover:text-red-300 cursor-pointer font-mono underline underline-offset-2 transition-colors" data-testid={`link-shop-${t.key}`}>
                   shop →
                 </span>
               </Link>

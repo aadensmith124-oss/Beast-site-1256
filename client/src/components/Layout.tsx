@@ -69,7 +69,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     {
       label: "Channel",
       links: [
-        { href: "https://t.me/+4mXj61Q-goYwNWU9", label: "Telegram Channel", icon: Send, external: true },
+        { href: "https://t.me/+3-lMkt-idutkOTIx", label: "Telegram Channel", icon: Send, external: true },
       ],
     },
     {
@@ -104,7 +104,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       {/* ── Announcement banner ── */}
       {activeAnnouncements.length > 0 && (
-        <div className="w-full overflow-hidden z-50" style={{ height: 32, background: "linear-gradient(90deg,#38551b,#9acb3f,#38551b)" }}>
+        <div className="w-full overflow-hidden z-50" style={{ height: 32, background: "linear-gradient(90deg,#5a0000,#ff2d2d,#5a0000)" }}>
           <div className="flex items-center h-full whitespace-nowrap animate-[marquee_18s_linear_infinite]">
             {[...Array(4)].flatMap((_, repeat) => activeAnnouncements.map((announcement) => (
               announcement.link ? (
@@ -143,7 +143,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
         {/* Wordmark */}
         <span className="text-primary font-black tracking-[0.18em] uppercase text-sm select-none">
-          GorillaCC
+          TurtleCC
         </span>
 
         {/* Balance pill */}
@@ -168,7 +168,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       >
         {/* Drawer header */}
         <div className="flex items-center justify-between px-4 h-[52px] border-b border-white/8 shrink-0">
-          <span className="text-primary font-black tracking-[0.18em] uppercase text-xs">GorillaCC</span>
+          <span className="text-primary font-black tracking-[0.18em] uppercase text-xs">TurtleCC</span>
           <button onClick={() => setNavOpen(false)} className="text-white/40 hover:text-white/80 transition-colors p-1">
             <X className="h-4 w-4" />
           </button>
