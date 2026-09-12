@@ -451,7 +451,7 @@ export default function DepositPage() {
           <span>TOS</span>
           <span>FAQs</span>
         </div>
-        <p className="text-xs text-white/25">© 2026 TurtleCC. All rights reserved</p>
+        <p className="text-xs text-white/25">© 2026 TopCc. All rights reserved</p>
       </div>
     </div>
   );
