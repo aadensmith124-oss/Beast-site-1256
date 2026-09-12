@@ -97,7 +97,7 @@ function IncineratorProtocol() {
   return (
     <section
       className="relative mx-3 mt-4 overflow-hidden rounded-2xl border border-[#8c1e2b]/80 bg-[#0b0d0c] shadow-[0_0_40px_rgba(140,30,43,0.18)]"
-      aria-label="TURTLECC INCENERATOR Protocol"
+      aria-label="Topcc incenerator@ Protocol"
       data-testid="embedded-incinerator-notice"
     >
       <div className="pointer-events-none absolute -right-24 -top-28 h-64 w-64 rounded-full bg-[#8c1e2b]/10 blur-3xl" />
@@ -116,7 +116,7 @@ function IncineratorProtocol() {
               <span className="text-[9px] font-medium uppercase tracking-[0.18em] text-white/35">TopCc</span>
             </div>
             <h2 className="mt-1 text-xl font-black uppercase leading-none tracking-[0.12em] text-[#e2bd6b] sm:text-2xl">
-              TURTLECC INCENERATOR
+              Topcc incenerator@
               <span className="block mt-1">Protocol</span>
             </h2>
           </div>
