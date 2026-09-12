@@ -52,7 +52,7 @@ export function SecurityCheck({ onVerified }: SecurityCheckProps) {
     >
       <div className="max-w-lg">
         <p className="text-white/60 text-sm font-mono mb-8 tracking-wide">
-           TurtleCC
+           TopCc
         </p>
 
         <h1 className="text-white text-3xl md:text-4xl font-extrabold mb-4 leading-tight">
@@ -147,7 +147,7 @@ export function SecurityCheck({ onVerified }: SecurityCheckProps) {
 
       <div className="absolute bottom-6 left-0 right-0 text-center">
         <p className="text-white/20 text-[11px]">
-          Ray ID: {rayId.current} · Protected by TurtleCC Security
+          Ray ID: {rayId.current} · Protected by TopCc Security
         </p>
       </div>
     </div>

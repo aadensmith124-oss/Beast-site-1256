@@ -4,7 +4,7 @@ export const TELEGRAM_GROUP_ID =
   process.env.TELEGRAM_GROUP_ID || process.env.Telegram_group_id || "";
 
 export const TELEGRAM_JOIN_URL =
-  process.env.TELEGRAM_JOIN_URL || "https://t.me/+3-lMkt-idutkOTIx";
+  process.env.TELEGRAM_JOIN_URL || "https://t.me/topcc_alias";
 
 /**
  * Idempotent Telegram referral/drop tables for the web app and standalone bot.
