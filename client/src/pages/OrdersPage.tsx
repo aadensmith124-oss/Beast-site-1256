@@ -173,7 +173,7 @@ export default function OrdersPage() {
             <RefreshCw className={`h-3 w-3 ${isRefetching ? "animate-spin" : ""}`} />
             Refresh
           </button>
-          <a href="https://t.me/topcc_alias" target="_blank" rel="noopener noreferrer">
+          <a href="https://t.me/+3-lMkt-idutkOTIx" target="_blank" rel="noopener noreferrer">
             <button className="flex items-center gap-1.5 border border-white/10 bg-[#111] rounded px-3 py-1.5 text-xs text-white/45 hover:text-white/70 transition-all" data-testid="btn-support">
               Support
             </button>

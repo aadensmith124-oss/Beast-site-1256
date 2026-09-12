@@ -69,7 +69,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     {
       label: "Channel",
       links: [
-        { href: "https://t.me/topcc_alias", label: "Telegram Channel", icon: Send, external: true },
+        { href: "https://t.me/+3-lMkt-idutkOTIx", label: "Telegram Channel", icon: Send, external: true },
       ],
     },
     {
