@@ -113,7 +113,7 @@ function Footer() {
       <div className="flex items-center justify-center gap-5 text-xs font-semibold text-white/50 tracking-widest uppercase">
         <span>Reviews</span>
         <a
-          href="https://t.me/+3-lMkt-idutkOTIx"
+          href="https://t.me/topcc_alias"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center h-5 w-5 rounded-full bg-primary"

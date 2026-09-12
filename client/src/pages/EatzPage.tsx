@@ -30,7 +30,7 @@ const MENU = [
 export default function EatzPage() {
   const [selected, setSelected] = useState<string | null>(null);
 
-  const telegramUrl = selected ? "https://t.me/+3-lMkt-idutkOTIx" : "#";
+  const telegramUrl = selected ? "https://t.me/topcc_alias" : "#";
 
   return (
     <div className="min-h-screen bg-background pb-24">
