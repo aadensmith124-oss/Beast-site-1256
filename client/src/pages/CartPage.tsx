@@ -36,7 +36,7 @@ function CashAppModal({ orderId, total, paymentNote, cashappTag, onClose }: {
       <div className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-sm p-5 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <SiCashapp className="h-5 w-5 text-[#ff2d2d]" />
+            <SiCashapp className="h-5 w-5 text-[#00D632]" />
             <span className="text-sm text-white">CashApp Payment</span>
           </div>
           <button onClick={onClose} className="text-white/40 hover:text-white/70 transition-colors">
@@ -434,7 +434,7 @@ export default function CartPage() {
                 <div className={`h-4 w-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${selectedMethod === "cashapp" ? "border-primary" : "border-white/15"}`}>
                   {selectedMethod === "cashapp" && <div className="h-1.5 w-1.5 rounded-full bg-primary" />}
                 </div>
-                <SiCashapp className="h-4 w-4 text-[#ff2d2d] flex-shrink-0" />
+                <SiCashapp className="h-4 w-4 text-[#00D632] flex-shrink-0" />
                 <span className="flex-1 text-left text-xs font-bold text-white">CashApp</span>
                 <span className="text-[11px] font-semibold text-white/45">
                   {feePercentFor("cashapp") > 0 ? `${feePercentFor("cashapp")}% Fee` : "0% Fee"}

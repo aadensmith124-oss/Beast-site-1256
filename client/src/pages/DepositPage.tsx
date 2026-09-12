@@ -49,7 +49,7 @@ const CRYPTO_NETWORKS: Record<string, string[]> = {
 };
 
 function methodColor(type: string) {
-  if (type === "cashapp") return "#ff2d2d";
+  if (type === "cashapp") return "#00D632";
   if (type === "venmo") return "#3D95CE";
   if (type === "zelle") return "#9B59E8";
   if (type === "chime") return "#ff2d2d";
@@ -272,7 +272,7 @@ export default function DepositPage() {
 
   const paymentOptions = [
     { id: "crypto", label: "Crypto", sub: "BTC · ETH · LTC · SOL · USDT", Icon: SiBitcoin, color: "#F7931A", fee: "0% fee" },
-    ...(cashappEnabled ? [{ id: "cashapp", label: "CashApp", sub: "instant", Icon: SiCashapp, color: "#ff2d2d", fee: feeLabel(manualMethods?.cashapp?.fee) }] : []),
+    ...(cashappEnabled ? [{ id: "cashapp", label: "CashApp", sub: "instant", Icon: SiCashapp, color: "#00D632", fee: feeLabel(manualMethods?.cashapp?.fee) }] : []),
     ...(venmoEnabled ? [{ id: "venmo", label: "Venmo", sub: "instant", Icon: (props: any) => <LetterIcon {...props} letter="V" />, color: "#3D95CE", fee: feeLabel(manualMethods?.venmo?.fee) }] : []),
     ...(zelleEnabled ? [{ id: "zelle", label: "Zelle", sub: "instant", Icon: (props: any) => <LetterIcon {...props} letter="Z" />, color: "#9B59E8", fee: feeLabel(manualMethods?.zelle?.fee) }] : []),
     ...(chimeEnabled ? [{ id: "chime", label: "Chime", sub: "instant", Icon: (props: any) => <LetterIcon {...props} letter="C" />, color: "#ff2d2d", fee: feeLabel(manualMethods?.chime?.fee) }] : []),
@@ -451,7 +451,7 @@ export default function DepositPage() {
           <span>TOS</span>
           <span>FAQs</span>
         </div>
-        <p className="text-xs text-white/25">© 2026 TopCC. All rights reserved</p>
+        <p className="text-xs text-white/25">© 2026 TurtleCC. All rights reserved</p>
       </div>
     </div>
   );

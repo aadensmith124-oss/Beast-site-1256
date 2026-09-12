@@ -97,7 +97,7 @@ function IncineratorProtocol() {
   return (
     <section
       className="relative mx-3 mt-4 overflow-hidden rounded-2xl border border-[#8c1e2b]/80 bg-[#0b0d0c] shadow-[0_0_40px_rgba(140,30,43,0.18)]"
-      aria-label="TOPCC INCENERATOR Protocol"
+      aria-label="TURTLECC INCENERATOR Protocol"
       data-testid="embedded-incinerator-notice"
     >
       <div className="pointer-events-none absolute -right-24 -top-28 h-64 w-64 rounded-full bg-[#8c1e2b]/10 blur-3xl" />
@@ -113,10 +113,10 @@ function IncineratorProtocol() {
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#d64a58]">Inventory protocol</span>
               <span className="h-1 w-1 rounded-full bg-[#d64a58] shadow-[0_0_8px_#d64a58]" />
-              <span className="text-[9px] font-medium uppercase tracking-[0.18em] text-white/35">TopCC</span>
+              <span className="text-[9px] font-medium uppercase tracking-[0.18em] text-white/35">TurtleCC</span>
             </div>
             <h2 className="mt-1 text-xl font-black uppercase leading-none tracking-[0.12em] text-[#e2bd6b] sm:text-2xl">
-              TOPCC INCENERATOR
+              TURTLECC INCENERATOR
               <span className="block mt-1">Protocol</span>
             </h2>
           </div>
@@ -285,7 +285,7 @@ export default function CardsPage() {
 
       {/* ── Hero ── */}
       <div className="text-center pt-8 pb-4 space-y-1">
-        <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-wide uppercase">TopCC</h1>
+        <h1 className="text-3xl sm:text-4xl font-black text-primary tracking-wide uppercase">TurtleCC</h1>
         <p className="text-sm text-white/50">Providing high quality cards since 2026.</p>
       </div>
 

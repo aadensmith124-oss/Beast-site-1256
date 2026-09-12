@@ -13,6 +13,7 @@
     "build:bot": "tsx script/build-bot.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
     "start:bot": "NODE_ENV=production node dist/bot.mjs",
+    "set:telegram-webhook": "tsx script/set-telegram-webhook.ts",
     "check": "tsc",
     "test:telegram-drops": "tsx --test server/license-key-file.test.ts server/license-claim-policy.test.ts",
     "test:security": "tsx --test server/data-encryption.test.ts",

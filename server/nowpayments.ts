@@ -28,7 +28,7 @@ export async function createNowPaymentsInvoice(params: {
     price_amount: params.amount,
     price_currency: "usd",
     order_id: params.orderId || `order-${Date.now()}`,
-    order_description: "TopCC deposit",
+    order_description: "TurtleCC deposit",
   };
 
   if (params.successUrl)     body.success_url     = params.successUrl;

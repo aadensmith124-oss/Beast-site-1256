@@ -280,7 +280,7 @@ function AuthFooter() {
         <span>TOS</span>
         <span>FAQs</span>
       </div>
-      <p className="text-xs text-white/25">© 2026 TopCC. All rights reserved</p>
+      <p className="text-xs text-white/25">© 2026 TurtleCC. All rights reserved</p>
     </div>
   );
 }
@@ -296,12 +296,12 @@ export default function AuthPage() {
     <div className="min-h-screen flex flex-col" style={{ background: "#0d0d0d" }}>
       <div className="flex-1 flex flex-col items-center justify-center px-5 py-10">
         <div className="w-full max-w-[380px]">
-          <div className="flex flex-col items-center mb-8" aria-label="TopCC">
+          <div className="flex flex-col items-center mb-8" aria-label="TurtleCC">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 shadow-[0_0_28px_rgba(154,203,63,0.12)]">
               <CreditCard className="h-6 w-6 text-primary" strokeWidth={1.8} />
             </div>
             <div className="mt-3 text-lg font-black uppercase tracking-[0.2em] text-primary">
-              TopCC
+              TurtleCC
             </div>
           </div>
           {tab === "login"

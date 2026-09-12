@@ -70,7 +70,7 @@ export default function AdminPage() {
       <aside className="hidden md:flex w-52 shrink-0 flex-col border-r border-white/10 bg-[#111]">
         <div className="px-5 py-5 border-b border-white/8">
           <p className="text-base font-black text-white">
-             Top<span className="text-primary">CC</span>
+             Turtle<span className="text-primary">CC</span>
           </p>
           <p className="text-[10px] text-white/40 uppercase tracking-widest font-mono mt-0.5">Admin</p>
         </div>
@@ -118,7 +118,7 @@ export default function AdminPage() {
         <header className="md:hidden shrink-0 flex items-center justify-between px-4 py-3 bg-[#111] border-b border-white/10">
           <div>
             <p className="text-sm font-black text-white">
-               Top<span className="text-primary">CC</span>
+               Turtle<span className="text-primary">CC</span>
               <span className="ml-1.5 text-xs font-normal text-white/40">Admin</span>
             </p>
             <p className="text-[10px] text-white/40 font-mono">{activeLabel}</p>
@@ -2323,7 +2323,7 @@ function IntegrationsSection() {
 
   const METHODS = [
     { id: "wallet", label: "Wallet / Balance", icon: <Wallet className="h-4 w-4 text-white" />, bg: "bg-primary" },
-    { id: "cashapp", label: "CashApp", icon: <SiCashapp className="h-4 w-4 text-white" />, bg: "bg-[#ff2d2d]" },
+    { id: "cashapp", label: "CashApp", icon: <SiCashapp className="h-4 w-4 text-[#00D632]" />, bg: "bg-[#00D632]/15" },
     { id: "venmo", label: "Venmo", icon: <span className="text-white font-black text-sm">V</span>, bg: "bg-[#3D95CE]" },
     { id: "zelle", label: "Zelle", icon: <span className="text-white font-black text-sm">Z</span>, bg: "bg-[#6D1ED4]" },
     { id: "chime", label: "Chime", icon: <span className="text-white font-black text-sm">C</span>, bg: "bg-[#ff2d2d]" },
@@ -2384,10 +2384,10 @@ function IntegrationsSection() {
             description="Customers send CashApp to this tag with a generated note."
             settingKey="cashapp-tag"
             placeholder="$YourCashTag"
-            color="#ff2d2d"
+             color="#00D632"
           />
-          <MinDepositCard method="cashapp" label="CashApp" color="#ff2d2d" />
-          <FeeSettingCard method="cashapp" label="CashApp" color="#ff2d2d" />
+          <MinDepositCard method="cashapp" label="CashApp" color="#00D632" />
+          <FeeSettingCard method="cashapp" label="CashApp" color="#00D632" />
         </div>
       </div>
 
@@ -2532,7 +2532,7 @@ function methodMeta(method: string) {
   if (method === "Venmo") return { color: "#3D95CE", label: "Venmo", icon: "V" };
   if (method === "Chime") return { color: "#ff2d2d", label: "Chime", icon: "C" };
   if (method === "Zelle") return { color: "#9B59E8", label: "Zelle", icon: "Z" };
-  return { color: "#ff2d2d", label: "CashApp", icon: "$" };
+  return { color: "#00D632", label: "CashApp", icon: "$" };
 }
 
 function CashAppSection() {
@@ -2705,7 +2705,7 @@ function CashAppSection() {
       <div className="flex gap-1.5 flex-wrap">
         {[
           { key: "all", label: "All", count: pendingOrders.length, color: "text-white/70" },
-          { key: "CashApp", label: "CashApp", count: cashappCount, color: "text-[#ff2d2d]" },
+          { key: "CashApp", label: "CashApp", count: cashappCount, color: "text-[#00D632]" },
           { key: "Venmo", label: "Venmo", count: venmoCount, color: "text-[#3D95CE]" },
           { key: "Chime", label: "Chime", count: chimeCount, color: "text-[#ff2d2d]" },
           { key: "Zelle", label: "Zelle", count: zelleCount, color: "text-[#9B59E8]" },

@@ -284,7 +284,7 @@ async function broadcastMessage(ctx: Context, bot: Bot) {
     try {
       await bot.api.sendMessage(
         recipient.telegram_chat_id,
-        `📢 Announcement from TopCC\n\n${message}`,
+        `📢 Announcement from TurtleCC\n\n${message}`,
       );
       delivered++;
     } catch (error: any) {
@@ -582,7 +582,7 @@ async function sendStatus(ctx: Context) {
       : `⚠️ Add *${NAME_KEYWORD}* to your first or last name`;
 
   await ctx.reply(
-    `👤 *Your TopCC Drops Status*\n\n` +
+    `👤 *Your TurtleCC Drops Status*\n\n` +
     `Access: ${accessLine}\n` +
     `🎁 Claims in the last 24 hours: *${claims.used}/${claims.allowance} used*\n` +
     `Claims remaining: *${claims.remaining}*\n` +
@@ -694,7 +694,7 @@ async function handleNameCheck(ctx: Context): Promise<void> {
 
 }
 
-export function startTelegramBot() {
+export function createTelegramBot() {
   if (!BOT_TOKEN) {
     log("Telegram bot token not set — bot disabled", "telegram");
     return null;
@@ -739,12 +739,12 @@ export function startTelegramBot() {
       const member = await ctx.api.getChatMember(GROUP_ID, userId);
       const allowed = ["creator", "administrator", "member", "restricted"].includes(member.status);
       if (!allowed) {
-        await ctx.reply(`🔒 You must join the TopCC group before using bot commands.\n\n👉 ${GROUP_INVITE}`);
+        await ctx.reply(`🔒 You must join the TurtleCC group before using bot commands.\n\n👉 ${GROUP_INVITE}`);
         return;
       }
     } catch (err: any) {
       console.error("[telegram] membership check failed:", err?.message ?? err);
-        await ctx.reply(`🔒 You must join the TopCC group before using bot commands.\n\n👉 ${GROUP_INVITE}`);
+        await ctx.reply(`🔒 You must join the TurtleCC group before using bot commands.\n\n👉 ${GROUP_INVITE}`);
       return;
     }
 
@@ -780,7 +780,7 @@ export function startTelegramBot() {
     }
 
     await ctx.reply(
-      `👋 Welcome to the *TopCC* drops bot!\n\n` +
+      `👋 Welcome to the *TurtleCC* drops bot!\n\n` +
       `*How to get started:*\n` +
       `1. Add *${NAME_KEYWORD}* to your Telegram display name\n` +
       `2. Use /claim when drops are available\n` +
@@ -904,7 +904,7 @@ export function startTelegramBot() {
   /* ── /help ────────────────────────────────────────────────────────────── */
   bot.command("help", async (ctx: Context) => {
     await ctx.reply(
-      `*TopCC Drops Bot*\n\n` +
+      `*TurtleCC Drops Bot*\n\n` +
       `/claim — Get one queued drop per 24 hours\n` +
       `/status — View access and claim status\n` +
       `/vouches — View your vouch submissions\n` +
@@ -930,7 +930,14 @@ export function startTelegramBot() {
     console.error("[telegram] error:", err.message);
   });
 
-  // Start long polling — wrapped so a bad token doesn't crash the server
+  return bot;
+}
+
+/** Start long polling for persistent runtimes such as Replit or a VM. */
+export function startTelegramBot() {
+  const bot = createTelegramBot();
+  if (!bot) return null;
+
   bot.start({
     onStart: () => log("Telegram bot started (long polling)", "telegram"),
   }).catch((err: any) => {
